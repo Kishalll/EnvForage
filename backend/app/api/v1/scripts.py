@@ -1,0 +1,121 @@
+"""Script generation endpoint — POST /api/v1/scripts/generate."""
+import io
+import zipfile
+
+from fastapi import APIRouter, HTTPException
+from fastapi.responses import StreamingResponse
+
+from app.api.deps import DB
+from app.compatibility.errors import IncompatibilityError, UnknownVersionError, UnsupportedOSError
+from app.schemas.script import GenerationRequest, GenerationResponse
+from app.services import profile_service, script_service
+
+router = APIRouter()
+
+
+@router.post("/scripts/generate", response_model=GenerationResponse, status_code=201)
+async def generate_scripts(
+    request: GenerationRequest,
+    db: DB,
+) -> GenerationResponse:
+    """
+    Generate a set of setup scripts for a given profile and target configuration.
+
+    The Compatibility Engine validates all version constraints before rendering.
+    Any incompatibility is returned as a structured 409 error.
+    """
+    # Load profile
+    profile = await profile_service.get_profile_by_slug(db, request.profile_id)
+    if profile is None:
+        raise HTTPException(
+            status_code=404,
+            detail={
+                "error": {
+                    "code": "PROFILE_NOT_FOUND",
+                    "message": f"Profile '{request.profile_id}' not found",
+                }
+            },
+        )
+
+    # Generate (may raise compatibility errors)
+    try:
+        result = await script_service.generate_scripts(db, profile, request)
+    except UnsupportedOSError as e:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "error": {
+                    "code": "UNSUPPORTED_OS",
+                    "message": str(e),
+                    "details": {
+                        "profile": e.profile_slug,
+                        "requested_os": e.requested_os,
+                        "supported_os": e.supported_os,
+                    },
+                }
+            },
+        ) from e
+    except (IncompatibilityError, UnknownVersionError) as e:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "error": {
+                    "code": "INCOMPATIBLE_VERSIONS",
+                    "message": str(e),
+                    "details": (
+                        e.to_dict()
+                        if isinstance(e, IncompatibilityError)
+                        else {"component": e.component, "version": e.version}
+                    ),
+                }
+            },
+        ) from e
+
+    return result
+
+
+@router.get("/scripts/{job_id}/download")
+async def download_scripts(job_id: str, db: DB) -> StreamingResponse:
+    """
+    Download a generated script bundle as a ZIP file.
+    """
+    from sqlalchemy import select
+    from app.models.script_job import GeneratedScript, ScriptGenerationJob
+    import uuid
+
+    try:
+        job_uuid = uuid.UUID(job_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid job_id format")
+
+    from sqlalchemy.orm import selectinload
+    result = await db.execute(
+        select(ScriptGenerationJob)
+        .where(ScriptGenerationJob.id == job_uuid)
+        .options(selectinload(ScriptGenerationJob.scripts))
+    )
+    job = result.scalar_one_or_none()
+    if job is None:
+        raise HTTPException(status_code=404, detail="Job not found")
+
+    # Build ZIP in memory
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zf:
+        for script in job.scripts:
+            zf.writestr(script.filename, script.content)
+        # Include a manifest
+        manifest = (
+            f"EnvForge Generated Scripts\n"
+            f"Job: {job.id}\n"
+            f"Profile: {job.profile_id}\n"
+            f"OS: {job.target_os}\n"
+            f"Python: {job.python_version}\n"
+        )
+        zf.writestr("MANIFEST.txt", manifest)
+
+    zip_buffer.seek(0)
+    return StreamingResponse(
+        zip_buffer,
+        media_type="application/zip",
+        headers={"Content-Disposition": f"attachment; filename=envforge_{job_id[:8]}.zip"},
+    )

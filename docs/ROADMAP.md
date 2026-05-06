@@ -1,0 +1,172 @@
+# EnvForge — Development Roadmap
+
+> **Version**: 0.2.0
+> **Status**: Phase 1 Complete — Phase 2 Next
+> **Last Updated**: 2026-05-06
+
+---
+
+## Phase 0 — Foundation ✅ Complete
+
+**Goal**: Establish project structure, documentation, and base configurations.
+
+### Deliverables
+- [x] High-level architecture design
+- [x] Folder structure scaffolding
+- [x] Database schema design
+- [x] Compatibility engine design
+- [x] Template system design
+- [x] Documentation strategy
+- [x] Development environment setup (Docker Compose)
+- [x] `.gitignore`, `pyproject.toml`, `Dockerfile`
+- [ ] CI/CD pipeline skeleton (GitHub Actions) — *Phase 6*
+- [ ] Contributor guide (CONTRIBUTING.md) — *Phase 6*
+
+**Exit Criteria**: Any contributor can clone and run the dev stack locally. ✅
+
+---
+
+## Phase 1 — Core Backend ✅ Complete
+
+**Goal**: Working FastAPI backend with compatibility engine and static profiles.
+
+### 1.1 — Data Layer
+- [x] PostgreSQL schema migrations (Alembic) — `0001_initial.py` (10 tables)
+- [x] SQLAlchemy 2.0 async ORM models (all entities)
+- [x] Seed data: 6 environment profiles (`seeds/profiles.yaml`)
+- [x] CUDA compatibility matrix seed data (`seeds/cuda_matrix.yaml`)
+- [x] Idempotent seed service (`app/services/seed_service.py`)
+
+### 1.2 — Compatibility Engine
+- [x] `CompatibilityResolver` class — pure logic, no I/O
+- [x] CUDA ↔ Driver ↔ cuDNN version matrix (11.8, 12.1, 12.4)
+- [x] Python ↔ Framework version matrix (torch 2.0–2.4, tf 2.13–2.15)
+- [x] OS-specific constraint rules (WSL GPU note, TF Windows note)
+- [x] Structured error types: `IncompatibilityError`, `UnknownVersionError`, `UnsupportedOSError`
+- [x] 11 unit tests (positive, negative, edge cases)
+
+### 1.3 — Template Engine
+- [x] Jinja2 template loader (`TemplateRenderer`)
+- [x] `setup.sh` template (Linux/WSL) with pre-flight checks
+- [x] `setup.ps1` template (Windows PowerShell)
+- [x] `requirements.txt` template
+- [x] `Dockerfile` template (CPU and CUDA variants)
+- [x] `devcontainer.json` template
+- [x] `verify_torch.sh` template (PyTorch CUDA verification)
+- [x] Safety filter — 15 forbidden patterns (10 unit tests)
+
+### 1.4 — API Endpoints
+- [x] `GET /api/v1/profiles` — list profiles (filterable by OS, CUDA, tags)
+- [x] `GET /api/v1/profiles/{slug}` — get single profile
+- [x] `POST /api/v1/scripts/generate` — generate + persist scripts
+- [x] `GET /api/v1/scripts/{job_id}/download` — ZIP bundle download
+- [x] `POST /api/v1/diagnose` — accept CLI diagnostic report
+
+### 1.5 — AI Layer Skeleton
+- [x] `LLMProvider` ABC (pluggable provider interface)
+- [x] `MockProvider` (deterministic, for testing)
+- [x] `SuggestedFix` + `TroubleshootResponse` Pydantic models
+
+**Exit Criteria**: Can generate a valid `setup.sh` for "PyTorch CUDA" via API. ✅
+
+---
+
+## Phase 2 — CLI Diagnostic Agent
+
+**Goal**: Standalone Python package that collects and reports system info.
+
+### Deliverables
+- [ ] `envforge-agent` PyPI package structure
+- [ ] OS detection module
+- [ ] GPU/VRAM detection (nvidia-smi, wmi)
+- [ ] CUDA version detection
+- [ ] Python environment scanner
+- [ ] NVIDIA driver version parser
+- [ ] WSL detection
+- [ ] RAM/CPU detection
+- [ ] Structured JSON output (`DiagnosticReport` schema)
+- [ ] CLI interface (`envforge diagnose`)
+- [ ] Integration: `POST /api/diagnose` endpoint on backend
+
+**Exit Criteria**: `envforge diagnose` outputs valid JSON on Windows, WSL, and Ubuntu.
+
+---
+
+## Phase 3 — Frontend (Next.js)
+
+**Goal**: Working web UI for profile browsing and script generation.
+
+### Deliverables
+- [ ] Project init with Next.js 14+ App Router, TypeScript, TailwindCSS
+- [ ] Design system (tokens, typography, color palette)
+- [ ] Home/landing page
+- [ ] Profile browser page with filtering
+- [ ] Profile detail page with metadata
+- [ ] Script generation wizard (multi-step form)
+- [ ] Script preview and download UI
+- [ ] Diagnostic report upload + results viewer
+- [ ] API client (typed, using `fetch` or `axios`)
+
+**Exit Criteria**: End-to-end: select profile → configure → download `setup.sh`.
+
+---
+
+## Phase 4 — AI Troubleshooting Layer
+
+**Goal**: AI-assisted diagnosis and repair script generation.
+
+### Deliverables
+- [ ] LLM provider abstraction (pluggable: OpenAI, OpenRouter, Ollama)
+- [ ] Structured prompt builder (diagnostic context → prompt)
+- [ ] `SuggestedFix` response schema (Pydantic)
+- [ ] Shell command safety filter
+- [ ] `POST /api/troubleshoot` endpoint
+- [ ] `POST /api/repair` endpoint (generates repair scripts)
+- [ ] Frontend AI chat interface
+- [ ] Rate limiting (Redis-based, Phase 4.5)
+
+**Exit Criteria**: Given a diagnostic JSON, AI returns structured fix suggestions.
+
+---
+
+## Phase 5 — Environment Verification
+
+**Goal**: Automated verification of installed ML environments.
+
+### Deliverables
+- [ ] Verification script generator (per framework)
+- [ ] TensorFlow GPU verification script
+- [ ] PyTorch CUDA verification script
+- [ ] OpenCV install verification
+- [ ] `POST /api/verify` endpoint
+- [ ] Verification result schema + frontend display
+
+---
+
+## Phase 6 — Polish & Production Readiness
+
+**Goal**: Hardening, docs, and community readiness.
+
+### Deliverables
+- [ ] Full OpenAPI documentation
+- [ ] Rate limiting + API key management
+- [ ] Docker Compose (dev) + Dockerfile (prod) for all services
+- [ ] GitHub Actions: lint, test, build pipeline
+- [ ] Contributor docs + ADR library
+- [ ] Security audit: input sanitization, prompt injection prevention
+- [ ] Performance benchmarks for compatibility resolution
+- [ ] Public beta release
+
+---
+
+## Milestone Summary
+
+| Phase | Name | Target |
+|-------|------|--------|
+| 0 | Foundation | Week 1 |
+| 1 | Core Backend | Week 2–3 |
+| 2 | CLI Agent | Week 4 |
+| 3 | Frontend | Week 5–6 |
+| 4 | AI Layer | Week 7–8 |
+| 5 | Verification | Week 9 |
+| 6 | Production | Week 10–12 |

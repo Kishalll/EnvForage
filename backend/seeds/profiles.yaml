@@ -1,0 +1,196 @@
+profiles:
+  - slug: pytorch-cuda
+    name: "PyTorch CUDA"
+    description: >
+      Full PyTorch GPU environment with CUDA support. Ideal for deep learning
+      model training and inference on NVIDIA GPUs.
+    tags: [deep-learning, gpu, cuda, pytorch]
+    os_support: [LINUX, WSL]
+    cuda_required: true
+    python_versions: ["3.10", "3.11"]
+    cuda_versions: ["11.8", "12.1"]
+    status: ACTIVE
+    last_validated: "2024-12-01"
+    packages:
+      - name: torch
+        version_spec: "2.1.2"
+        cuda_variant: "cu118"
+        install_order: 0
+      - name: torchvision
+        version_spec: "0.16.2"
+        cuda_variant: "cu118"
+        install_order: 1
+      - name: torchaudio
+        version_spec: "2.1.2"
+        cuda_variant: "cu118"
+        install_order: 2
+      - name: numpy
+        version_spec: "1.26.4"
+        install_order: 3
+      - name: matplotlib
+        version_spec: "3.8.4"
+        install_order: 4
+      - name: scipy
+        version_spec: "1.13.0"
+        install_order: 5
+
+  - slug: tf-gpu
+    name: "TensorFlow GPU"
+    description: >
+      TensorFlow with GPU acceleration via CUDA. Supports TF 2.13–2.15.
+      Note: TF 2.11+ requires WSL2 on Windows for GPU support.
+    tags: [deep-learning, gpu, cuda, tensorflow]
+    os_support: [LINUX, WSL]
+    cuda_required: true
+    python_versions: ["3.10", "3.11"]
+    cuda_versions: ["11.8"]
+    status: ACTIVE
+    last_validated: "2024-12-01"
+    packages:
+      - name: tensorflow
+        version_spec: "2.14.0"
+        install_order: 0
+      - name: numpy
+        version_spec: "1.26.4"
+        install_order: 1
+      - name: matplotlib
+        version_spec: "3.8.4"
+        install_order: 2
+      - name: pandas
+        version_spec: "2.2.2"
+        install_order: 3
+
+  - slug: yolov8
+    name: "YOLOv8"
+    description: >
+      Ultralytics YOLOv8 object detection environment. Includes PyTorch,
+      OpenCV, and all Ultralytics dependencies. CUDA optional but recommended.
+    tags: [computer-vision, object-detection, yolo, gpu]
+    os_support: [LINUX, WSL, WIN]
+    cuda_required: false
+    python_versions: ["3.10", "3.11"]
+    cuda_versions: ["11.8", "12.1"]
+    status: ACTIVE
+    last_validated: "2024-12-01"
+    packages:
+      - name: ultralytics
+        version_spec: "8.2.0"
+        install_order: 0
+      - name: torch
+        version_spec: "2.1.2"
+        install_order: 1
+        is_optional: true
+      - name: opencv-python
+        version_spec: "4.9.0.80"
+        install_order: 2
+      - name: numpy
+        version_spec: "1.26.4"
+        install_order: 3
+      - name: Pillow
+        version_spec: "10.3.0"
+        install_order: 4
+
+  - slug: stable-diffusion
+    name: "Stable Diffusion"
+    description: >
+      Hugging Face Diffusers stack for Stable Diffusion image generation.
+      Requires a GPU with at least 6GB VRAM. 8GB+ recommended.
+    tags: [generative-ai, image-generation, diffusion, gpu]
+    os_support: [LINUX, WSL]
+    cuda_required: true
+    python_versions: ["3.10", "3.11"]
+    cuda_versions: ["11.8", "12.1"]
+    status: ACTIVE
+    last_validated: "2024-12-01"
+    packages:
+      - name: torch
+        version_spec: "2.1.2"
+        cuda_variant: "cu118"
+        install_order: 0
+      - name: diffusers
+        version_spec: "0.27.2"
+        install_order: 1
+      - name: transformers
+        version_spec: "4.40.0"
+        install_order: 2
+      - name: accelerate
+        version_spec: "0.29.3"
+        install_order: 3
+      - name: safetensors
+        version_spec: "0.4.3"
+        install_order: 4
+      - name: Pillow
+        version_spec: "10.3.0"
+        install_order: 5
+      - name: numpy
+        version_spec: "1.26.4"
+        install_order: 6
+
+  - slug: opencv-beginner
+    name: "OpenCV Beginner"
+    description: >
+      Computer vision starter kit with OpenCV, NumPy, and Matplotlib.
+      CPU only. Perfect for learning image processing fundamentals.
+    tags: [computer-vision, opencv, beginner, cpu]
+    os_support: [LINUX, WSL, WIN]
+    cuda_required: false
+    python_versions: ["3.9", "3.10", "3.11"]
+    cuda_versions: []
+    status: ACTIVE
+    last_validated: "2024-12-01"
+    packages:
+      - name: opencv-python
+        version_spec: "4.9.0.80"
+        install_order: 0
+      - name: numpy
+        version_spec: "1.26.4"
+        install_order: 1
+      - name: matplotlib
+        version_spec: "3.8.4"
+        install_order: 2
+      - name: Pillow
+        version_spec: "10.3.0"
+        install_order: 3
+      - name: scikit-image
+        version_spec: "0.23.2"
+        install_order: 4
+
+  - slug: llm-finetune
+    name: "LLM Fine-Tuning"
+    description: >
+      Parameter-efficient fine-tuning stack for large language models.
+      Uses PEFT, TRL, and bitsandbytes for 4-bit/8-bit quantization.
+      Requires CUDA and significant VRAM (16GB+ recommended).
+    tags: [llm, fine-tuning, peft, nlp, gpu]
+    os_support: [LINUX, WSL]
+    cuda_required: true
+    python_versions: ["3.10", "3.11"]
+    cuda_versions: ["11.8", "12.1"]
+    status: ACTIVE
+    last_validated: "2024-12-01"
+    packages:
+      - name: torch
+        version_spec: "2.1.2"
+        cuda_variant: "cu118"
+        install_order: 0
+      - name: transformers
+        version_spec: "4.40.0"
+        install_order: 1
+      - name: peft
+        version_spec: "0.10.0"
+        install_order: 2
+      - name: trl
+        version_spec: "0.8.6"
+        install_order: 3
+      - name: bitsandbytes
+        version_spec: "0.43.1"
+        install_order: 4
+      - name: accelerate
+        version_spec: "0.29.3"
+        install_order: 5
+      - name: datasets
+        version_spec: "2.19.1"
+        install_order: 6
+      - name: scipy
+        version_spec: "1.13.0"
+        install_order: 7

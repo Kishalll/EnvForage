@@ -1,0 +1,64 @@
+# ==============================================================================
+# EnvForge Generated Dockerfile
+# Profile  : {{ profile.name }}
+# Python   : {{ python_version }}
+{% if cuda_version %}# CUDA     : {{ cuda_version }}
+{% endif %}# Generated: {{ generated_at }}
+# EnvForge : v{{ envforge_version }}
+# ==============================================================================
+
+{% if cuda_version %}
+FROM nvidia/cuda:{{ cuda_version }}.0-cudnn8-runtime-ubuntu22.04
+{% else %}
+FROM python:{{ python_version }}-slim-bookworm
+{% endif %}
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+{% if cuda_version %}
+# Install Python {{ python_version }} in CUDA base image
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python{{ python_version }} \
+    python{{ python_version }}-venv \
+    python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python{{ python_version }} 1
+{% endif %}
+
+WORKDIR /app
+
+# Copy requirements first for layer caching
+COPY requirements.txt .
+
+# Install dependencies
+{% if cuda_version %}
+RUN pip3 install --upgrade pip && \
+    pip3 install \
+{% for pkg in packages %}
+{% if pkg.cuda_variant %}
+        "{{ pkg.pip_spec }}" \
+{% endif %}
+{% endfor %}
+        --index-url https://download.pytorch.org/whl/cu{{ cuda_version | replace('.', '') }} && \
+    pip3 install \
+{% for pkg in packages %}
+{% if not pkg.cuda_variant %}
+        "{{ pkg.pip_spec }}" \
+{% endif %}
+{% endfor %}
+        --no-cache-dir
+{% else %}
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt --no-cache-dir
+{% endif %}
+
+# Copy application code
+COPY . .
+
+# Default command (override in docker-compose or at runtime)
+CMD ["python3", "-c", "print('EnvForge container ready. Override CMD to run your app.')"]

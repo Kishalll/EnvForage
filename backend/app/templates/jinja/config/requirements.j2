@@ -1,0 +1,16 @@
+# ==============================================================================
+# EnvForge Generated requirements.txt
+# Profile  : {{ profile.name }}
+# Python   : {{ python_version }}
+{% if cuda_version %}# CUDA     : {{ cuda_version }}
+{% endif %}# Generated: {{ generated_at }}
+# EnvForge : v{{ envforge_version }}
+#
+# Install with:
+{% if cuda_version %}#   pip install -r requirements.txt --index-url https://download.pytorch.org/whl/cu{{ cuda_version | replace('.', '') }}
+{% else %}#   pip install -r requirements.txt
+{% endif %}# ==============================================================================
+
+{% for pkg in packages %}
+{{ pkg.pip_spec }}
+{% endfor %}

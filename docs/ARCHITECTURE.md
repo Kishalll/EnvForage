@@ -1,11 +1,10 @@
 # EnvForge — System Architecture
 
 > **Version**: 0.2.0
-> **Status**: Phase 1 Implemented
-> **Last Updated**: 2026-05-06
+> **Status**: Phase 1 & 3 Implemented
+> **Last Updated**: 2026-05-14
 
-> **Implementation Coverage**: Backend API, Compatibility Engine, Template Engine, and
-> Database layer are fully implemented. Frontend (Phase 3) and CLI Agent (Phase 2) pending.
+> **Implementation Coverage**: Backend API, Compatibility Engine, Template Engine, Database layer, and Frontend Web App (Phase 3) are fully implemented. CLI Agent (Phase 2) pending.
 
 ---
 
@@ -168,13 +167,15 @@ Because Supabase has transitioned its default database endpoints (`db.[ref].supa
 ## 5. Deployment Architecture (Production Target)
 
 ```
-Internet → Nginx (reverse proxy + TLS termination)
-              ├── /api/*  → FastAPI (uvicorn, containerized)
-              └── /*      → Next.js (standalone build, containerized)
+Internet → Vercel Edge Network
+              └── /*      → Next.js Web App (Serverless/Edge)
 
-FastAPI → PostgreSQL (managed, e.g., Supabase or Railway)
+Internet → Render (Web Service)
+              └── /api/*  → FastAPI (uvicorn, containerized)
+
+FastAPI → PostgreSQL (Supabase IPv4 Pooler)
 FastAPI → Redis (session cache, rate limiting — Phase 2)
-FastAPI → LLM Provider (OpenAI API / OpenRouter)
+FastAPI → OpenRouter / LLM Provider (Phase 4)
 ```
 
 ---
@@ -217,3 +218,4 @@ FastAPI → LLM Provider (OpenAI API / OpenRouter)
 | [ADR-004](./decisions/ADR-004-selectinload-eager-loading.md) | SQLAlchemy selectinload | Accepted |
 | [ADR-005](./decisions/ADR-005-yaml-seed-service.md) | YAML seed service | Accepted |
 | [ADR-006](./decisions/ADR-006-sqlite-unit-tests.md) | SQLite for unit tests | Accepted |
+| [ADR-007](./decisions/ADR-007-dynamic-ui-compatibility-fields.md) | Dynamic UI for Script Wizard | Accepted |

@@ -1,8 +1,8 @@
 # EnvForge — Development Roadmap
 
 > **Version**: 0.2.0
-> **Status**: Phase 1 Complete — Phase 2 Next
-> **Last Updated**: 2026-05-06
+> **Status**: Phase 1 & 3 Complete — Phase 2 & 4 Next
+> **Last Updated**: 2026-05-14
 
 ---
 
@@ -99,22 +99,22 @@ on Windows, WSL2, and Ubuntu 22.04. ✅
 
 ---
 
-## Phase 3 — Frontend (Next.js)
+## Phase 3 — Frontend (Next.js) ✅ Complete
 
 **Goal**: Working web UI for profile browsing and script generation.
 
 ### Deliverables
-- [ ] Project init with Next.js 14+ App Router, TypeScript, TailwindCSS
-- [ ] Design system (tokens, typography, color palette)
-- [ ] Home/landing page
-- [ ] Profile browser page with filtering
-- [ ] Profile detail page with metadata
-- [ ] Script generation wizard (multi-step form)
-- [ ] Script preview and download UI
-- [ ] Diagnostic report upload + results viewer
-- [ ] API client (typed, using `fetch` or `axios`)
+- [x] Project init with Next.js 14+ App Router, TypeScript, TailwindCSS
+- [x] Design system (tokens, typography, color palette)
+- [x] Home/landing page
+- [x] Profile browser page with filtering
+- [x] Profile detail page with metadata
+- [x] Script generation wizard (multi-step form)
+- [x] Script preview and download UI
+- [ ] Diagnostic report upload + results viewer *(Moved to Phase 4 integration)*
+- [x] API client (typed, using `fetch` or `axios`)
 
-**Exit Criteria**: End-to-end: select profile → configure → download `setup.sh`.
+**Exit Criteria**: End-to-end: select profile → configure → download `setup.sh`. ✅
 
 ---
 

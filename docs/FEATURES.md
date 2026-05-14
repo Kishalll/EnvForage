@@ -1,8 +1,8 @@
 # EnvForge — Feature Specifications
 
 > **Version**: 0.2.0
-> **Status**: Phase 1 Implemented
-> **Last Updated**: 2026-05-06
+> **Status**: Phase 1 & 3 Implemented
+> **Last Updated**: 2026-05-14
 
 ---
 
@@ -10,8 +10,9 @@
 
 | Feature | Status | Phase |
 |---------|--------|-------|
-| Environment Profiles | ✅ Implemented | Phase 1 |
-| Script Generation | ✅ Implemented | Phase 1 |
+| Web Application (Frontend) | ✅ Implemented | Phase 3 |
+| Environment Profiles | ✅ Implemented | Phase 1 & 3 |
+| Script Generation | ✅ Implemented | Phase 1 & 3 |
 | Diagnostic Report Ingestion | ✅ Implemented (partial) | Phase 1 |
 | Environment Verification | 🔲 Planned | Phase 5 |
 | AI Troubleshooting Layer | 🔲 Skeleton only | Phase 4 |
@@ -300,6 +301,21 @@ class LLMProvider(ABC):
 - AI may NOT generate destructive commands (`rm -rf`, `format`, `DROP TABLE`, etc.)
 - AI suggestions are rendered via Jinja2 templates, NOT raw LLM text
 - All AI calls include a system prompt enforcing structured JSON output only
+
+---
+
+## Feature 6: Web Application (Frontend)
+
+### Status: ✅ Implemented (Phase 3)
+
+**Implementation**: `frontend/src/`
+**Framework**: Next.js 14+ App Router, TypeScript, TailwindCSS
+
+### Capabilities
+- **Profile Browser**: View available environment profiles, packages, and descriptions.
+- **Script Generation Wizard**: A multi-step form to configure target OS, output formats, Python, and CUDA versions. Validates selections dynamically based on the chosen profile.
+- **API Integration**: Connects securely to the FastAPI backend (`/api/v1`).
+- **Deployment**: Configured for Vercel production deployment.
 
 ---
 

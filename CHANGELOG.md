@@ -7,8 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-05-14
+
 ### Added
-- Setup for Phase 3 (Next.js Frontend)
+- **Phase 3 Complete:** Next.js Frontend Web Application.
+- Interactive Profile Browser displaying environment templates, capabilities, and pre-configured packages.
+- Script Generation Wizard with dynamic dependency locking (Python/CUDA version auto-population based on profile restrictions).
+- API client wrapper for seamless communication with the FastAPI backend.
+- Vercel deployment configuration for edge-optimized hosting.
+- Documentation updates for Phase 3 (Architecture, Workflows, Script Wizard Feature Doc).
+- ADR-007: Dynamic UI Form Validation for Compatibility Engine.
+
+### Fixed
+- Re-aligned frontend `PackageDef` interface with backend `PackageSpecSchema` to ensure accurate package rendering.
+- Resolved `422 Unprocessable Content` API error by adding strict `python_version` and `cuda_version` state tracking to the generation wizard.
+- Fixed 500 Internal Server errors during profile fetching by enabling `from_attributes = True` on backend ORM schemas.
+- Removed trailing slashes in Vercel `NEXT_PUBLIC_API_URL` to fix `Failed to fetch` errors in production.
 
 ## [0.2.0] - 2026-05-06
 

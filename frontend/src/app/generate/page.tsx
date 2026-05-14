@@ -17,7 +17,9 @@ function WizardContent() {
   const [selectedProfile, setSelectedProfile] = useState<string>(initialProfileSlug || "");
   const [targetOs, setTargetOs] = useState<string>("LINUX");
   const [outputFormats, setOutputFormats] = useState<string[]>(["setup.sh"]);
-  
+  const [pythonVersion, setPythonVersion] = useState<string>("");
+  const [cudaVersion, setCudaVersion] = useState<string>("");
+
   const [step, setStep] = useState(1);
   const [loadingProfiles, setLoadingProfiles] = useState(true);
   
@@ -49,7 +51,9 @@ function WizardContent() {
       const req: ScriptGenerationRequest = {
         profile_id: selectedProfile,
         target_os: targetOs,
-        output_formats: outputFormats
+        output_formats: outputFormats,
+        python_version: pythonVersion,
+        ...(activeProfile?.cuda_required && cudaVersion ? { cuda_version: cudaVersion } : {})
       };
       const res = await api.generateScript(req);
       setResult(res);
@@ -80,6 +84,21 @@ function WizardContent() {
     }
   };
 
+  const activeProfile = profiles.find(p => p.slug === selectedProfile);
+
+  useEffect(() => {
+    if (activeProfile) {
+      if (activeProfile.python_versions?.length > 0 && !activeProfile.python_versions.includes(pythonVersion)) {
+        setPythonVersion(activeProfile.python_versions[0]);
+      }
+      if (activeProfile.cuda_required && activeProfile.cuda_versions && activeProfile.cuda_versions.length > 0 && !activeProfile.cuda_versions.includes(cudaVersion)) {
+        setCudaVersion(activeProfile.cuda_versions[0]);
+      } else if (!activeProfile.cuda_required) {
+        setCudaVersion("");
+      }
+    }
+  }, [activeProfile, pythonVersion, cudaVersion]);
+
   if (loadingProfiles) {
     return (
       <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
@@ -90,8 +109,6 @@ function WizardContent() {
       </div>
     );
   }
-
-  const activeProfile = profiles.find(p => p.slug === selectedProfile);
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -175,6 +192,44 @@ function WizardContent() {
                   );
                 })}
               </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '2rem', marginBottom: '2rem' }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', marginBottom: '0.75rem', fontWeight: 500 }}>Python Version</label>
+                <select 
+                  value={pythonVersion} 
+                  onChange={(e) => setPythonVersion(e.target.value)}
+                  style={{
+                    width: '100%', padding: '0.75rem', borderRadius: '8px',
+                    background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-strong)',
+                    color: 'var(--text-primary)', fontFamily: 'var(--font-mono)'
+                  }}
+                >
+                  {activeProfile.python_versions.map(v => (
+                    <option key={v} value={v} style={{ background: '#1e1e1e' }}>{v}</option>
+                  ))}
+                </select>
+              </div>
+
+              {activeProfile.cuda_required && activeProfile.cuda_versions && (
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '0.75rem', fontWeight: 500 }}>CUDA Version</label>
+                  <select 
+                    value={cudaVersion} 
+                    onChange={(e) => setCudaVersion(e.target.value)}
+                    style={{
+                      width: '100%', padding: '0.75rem', borderRadius: '8px',
+                      background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-accent)',
+                      color: 'var(--text-primary)', fontFamily: 'var(--font-mono)'
+                    }}
+                  >
+                    {activeProfile.cuda_versions.map(v => (
+                      <option key={v} value={v} style={{ background: '#1e1e1e' }}>{v}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
 
             <div style={{ marginBottom: '3rem' }}>

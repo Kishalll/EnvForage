@@ -1,8 +1,8 @@
 # EnvForge — Workflow Documentation
 
 > **Version**: 0.2.0
-> **Status**: Phase 1 Implemented
-> **Last Updated**: 2026-05-06
+> **Status**: Phase 1 & 3 Implemented
+> **Last Updated**: 2026-05-14
 
 ---
 
@@ -25,7 +25,7 @@ compatibility resolution, template rendering, safety filtering, and ZIP download
 — is operational via the API.
 
 ```
-User opens EnvForge Web App (Phase 3: not yet built)
+User opens EnvForge Web App (Phase 3: Implemented and deployed to Vercel)
     │
     ▼
 GET /api/v1/profiles

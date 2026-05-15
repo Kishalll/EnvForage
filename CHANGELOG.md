@@ -43,6 +43,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Repair script generation, preview, copy, and download (.sh)
     - Animated confidence bar and premium glassmorphism design
   - Added "AI Troubleshoot" nav link to global layout.
+- **Phase 4 — Part 7**: Rate Limiting.
+  - In-memory sliding-window rate limiter with abstract `RateLimitBackend` (swappable for Redis).
+  - Pre-configured limits: AI troubleshoot (10/min), repair (20/min), general (60/min).
+  - Applied to `POST /api/v1/troubleshoot` and `POST /api/v1/repair` as FastAPI dependencies.
+  - Standard HTTP 429 responses with `Retry-After` header.
+  - X-Forwarded-For support for proxy deployments.
+  - New config fields: `rate_limit_ai_rpm`, `rate_limit_repair_rpm`, `rate_limit_general_rpm`.
 
 ## [0.3.0] - 2026-05-14
 

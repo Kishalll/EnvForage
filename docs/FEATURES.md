@@ -295,6 +295,7 @@ are Phase 5 deliverables.
 - `frontend/src/types/index.ts` — AI TypeScript interfaces (TroubleshootRequest, SuggestedFix, RepairResponse, etc.)
 - `frontend/src/services/api.ts` — `troubleshoot()`, `generateRepair()`, `getRepairTemplates()` API methods
 - `frontend/src/app/troubleshoot/page.tsx` — AI Troubleshoot page (diagnostic input, fix cards, repair scripts)
+- `backend/app/middleware/rate_limit.py` — Sliding-window rate limiter (in-memory, Redis-swappable)
 
 ### AI Provider Interface
 

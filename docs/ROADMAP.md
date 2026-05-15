@@ -130,7 +130,7 @@ on Windows, WSL2, and Ubuntu 22.04. ✅
 - [x] `POST /api/troubleshoot` endpoint
 - [x] `POST /api/repair` endpoint (generates repair scripts)
 - [x] Frontend AI chat interface
-- [ ] Rate limiting (Redis-based, Phase 4.5)
+- [x] Rate limiting (in-memory, Redis-swappable)
 
 **Exit Criteria**: Given a diagnostic JSON, AI returns structured fix suggestions.
 

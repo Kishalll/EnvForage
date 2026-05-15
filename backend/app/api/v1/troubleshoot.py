@@ -1,12 +1,13 @@
 """Troubleshoot endpoint — POST /api/v1/troubleshoot."""
 import logging
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.ai.models import TroubleshootRequest, TroubleshootResponse
 from app.ai.providers.base import LLMProviderError
 from app.ai.service import AITroubleshootService
 from app.api.deps import DB
+from app.middleware.rate_limit import ai_rate_limit
 from app.templates.safety import SafetyViolationError
 
 logger = logging.getLogger(__name__)
@@ -31,11 +32,13 @@ _service = AITroubleshootService()
         422: {"description": "Invalid request payload"},
         500: {"description": "LLM provider error or safety violation"},
         503: {"description": "AI service temporarily unavailable"},
+        429: {"description": "Rate limit exceeded (10 requests/min)"},
     },
 )
 async def troubleshoot(
     request: TroubleshootRequest,
     db: DB,
+    _rate_limit: None = Depends(ai_rate_limit),
 ) -> TroubleshootResponse:
     """
     Accept a structured diagnostic report and return AI-powered
@@ -45,7 +48,7 @@ async def troubleshoot(
     - Structured as validated Pydantic models (never raw text)
     - Filtered through SafetyFilter (no destructive commands)
     - Persisted to the ai_sessions table for audit trail
-    - Rate-limited (Phase 4.5)
+    - Rate-limited (10 requests per minute per IP)
     """
     try:
         result = await _service.troubleshoot(request, db)

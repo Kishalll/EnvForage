@@ -2,9 +2,10 @@
 import logging
 from typing import Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
+from app.middleware.rate_limit import repair_rate_limit
 from app.services.repair_service import (
     RepairService,
     RepairTemplateNotFoundError,
@@ -72,9 +73,13 @@ class RepairTemplateListResponse(BaseModel):
         400: {"description": "Unknown repair template ID"},
         422: {"description": "Invalid request payload"},
         500: {"description": "Safety violation in rendered script"},
+        429: {"description": "Rate limit exceeded (20 requests/min)"},
     },
 )
-async def generate_repair(request: RepairRequest) -> RepairResponse:
+async def generate_repair(
+    request: RepairRequest,
+    _rate_limit: None = Depends(repair_rate_limit),
+) -> RepairResponse:
     """
     Generate a repair script from a template ID and parameters.
 

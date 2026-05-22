@@ -73,8 +73,10 @@ class TestDiagnoseOutputFlag:
             mock_builder.return_value.build.return_value = mock_report
 
             runner = CliRunner()
-            runner.invoke(cli, ["diagnose", "--output", str(output_file)])
+            result = runner.invoke(cli, ["diagnose", "--output", str(output_file)])
 
+        assert result.exit_code == 0
+        assert output_file.exists(), "Output file was not created"
         parsed = json.loads(output_file.read_text(encoding="utf-8"))
         for field in ["agent_version", "os", "cpu", "ram", "gpus", "cuda", "python_installations"]:
             assert field in parsed, f"Missing field: {field}"

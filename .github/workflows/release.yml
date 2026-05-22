@@ -8,6 +8,7 @@ on:
 permissions:
   contents: write
   packages: write
+  id-token: write # Required for PyPI OIDC Trusted Publishing
 
 jobs:
   release:
@@ -63,3 +64,8 @@ jobs:
           tags: |
             ghcr.io/${{ env.REPO_LC }}/backend:latest
             ghcr.io/${{ env.REPO_LC }}/backend:${{ github.ref_name }}
+
+      - name: Publish CLI package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: cli/dist/

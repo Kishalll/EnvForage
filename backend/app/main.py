@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1 import diagnose, profiles, repair, scripts, troubleshoot, verify
 from app.config import get_settings
+from app.middleware.metrics import setup_metrics
 
 
 @asynccontextmanager
@@ -47,6 +48,9 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    # ── Prometheus Metrics ────────────────────────────────────
+    setup_metrics(app)
 
     # ── Routers ───────────────────────────────────────────────
     app.include_router(profiles.router, prefix="/api/v1", tags=["profiles"])

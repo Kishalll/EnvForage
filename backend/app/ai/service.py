@@ -25,6 +25,7 @@ from app.ai.prompts.system import TROUBLESHOOT_SYSTEM_PROMPT
 from app.ai.prompts.troubleshoot import TroubleshootPromptBuilder
 from app.ai.providers import get_provider
 from app.ai.providers.base import LLMProviderError
+from app.middleware.metrics import record_ai_token_usage
 from app.models.ai_session import AIAuditLog, AISession, AISuggestion
 from app.templates.safety import SafetyViolationError, validate_rendered_output
 
@@ -133,6 +134,16 @@ class AITroubleshootService:
             token_usage = getattr(provider, "_last_usage", None)
 
         total_tokens = token_usage.get("total_tokens", 0) if token_usage else 0
+        prompt_tokens = token_usage.get("prompt_tokens", 0) if token_usage else 0
+        completion_tokens = token_usage.get("completion_tokens", 0) if token_usage else 0
+
+        record_ai_token_usage(
+            provider=provider_name,
+            model=model_name,
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+            success=True,
+        )
 
         await self._persist_session(
             db, session_id, request, llm_result, provider_name, model_name,

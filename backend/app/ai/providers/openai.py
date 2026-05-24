@@ -90,9 +90,11 @@ class OpenAIProvider(LLMProvider):
 
                 return response_model.model_validate_json(content)
             except httpx.HTTPStatusError as e:
-                raise LLMProviderError("openai", f"OpenAI API error occurred: {e.response.text}")
+                raise LLMProviderError("openai", f"OpenAI API error occured: {e.response.text}")
+            except LLMProviderError:
+                raise
             except Exception as e:
-                raise LLMProviderError("openai", f"Unexpected connection error under OpenAI provider: {str(e)}")
+                raise LLMProviderError("openai", f"Unexpected connection error under OpenAI provider: {str(e)}",) from e
 
     def stream(
         self,

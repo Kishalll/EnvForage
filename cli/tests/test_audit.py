@@ -1,5 +1,8 @@
 """Unit tests for envforge audit (#181 MVP)."""
+
 from __future__ import annotations
+
+import json
 from pathlib import Path
 from typing import List
 
@@ -16,6 +19,7 @@ from envforge_agent.audit import (
     LockfileSource,
     Package,
 )
+from envforge_agent.audit.formatters import format_json, format_sarif
 from envforge_agent.audit.differ import _classify_version_change
 from envforge_agent.audit.models import _normalize_name
 
@@ -225,3 +229,109 @@ class TestLocalEnvironmentErrors:
         mock_run.side_effect = FileNotFoundError("python not found")
         with pytest.raises(RuntimeError, match=r"Could not execute Python interpreter"):
             list(LocalEnvironment(python_executable="/bad/python").packages())
+            
+class TestJsonFormatter:
+    def test_format_json_no_drift(self):
+        # Use a synthetic empty result via direct construction
+        from envforge_agent.audit.models import AuditResult
+        result = AuditResult(
+            source_a="lockfile:a.txt",
+            source_b="lockfile:b.txt",
+            differences=[],
+            common_count=5,
+        )
+        payload = json.loads(format_json(result))
+        assert payload["source_a"] == "lockfile:a.txt"
+        assert payload["source_b"] == "lockfile:b.txt"
+        assert payload["differences"] == []
+        assert payload["summary"]["total"] == 0
+        assert payload["summary"]["common_count"] == 5
+
+    def test_format_json_with_drift(self, tmp_path: Path):
+        a = tmp_path / "a.txt"
+        a.write_text("django==4.2.0\nrequests==2.31.0\n")
+        b = tmp_path / "b.txt"
+        b.write_text("django==5.0.0\nrequests==2.32.0\n")
+
+        result = diff(LockfileSource(a), LockfileSource(b))
+        payload = json.loads(format_json(result))
+
+        assert payload["summary"]["total"] == 2
+        assert payload["summary"]["by_severity"]["major"] == 1
+        assert payload["summary"]["by_severity"]["minor"] == 1
+
+        packages = {entry["package"] for entry in payload["differences"]}
+        assert packages == {"django", "requests"}
+
+
+class TestSarifFormatter:
+    def test_format_sarif_structure(self, tmp_path: Path):
+        a = tmp_path / "a.txt"
+        a.write_text("django==4.2.0\n")
+        b = tmp_path / "b.txt"
+        b.write_text("django==5.0.0\n")
+
+        result = diff(LockfileSource(a), LockfileSource(b))
+        sarif = json.loads(format_sarif(result))
+
+        assert sarif["version"] == "2.1.0"
+        assert "runs" in sarif
+        assert len(sarif["runs"]) == 1
+        run = sarif["runs"][0]
+        assert run["tool"]["driver"]["name"] == "envforge-audit"
+        assert len(run["results"]) == 1
+        assert run["results"][0]["ruleId"] == "drift-major"
+        assert run["results"][0]["level"] == "error"
+
+    def test_format_sarif_severity_mapping(self, tmp_path: Path):
+        a = tmp_path / "a.txt"
+        a.write_text("a==1.0.0\nb==1.0.0\nc==1.0.0\n")
+        b = tmp_path / "b.txt"
+        b.write_text("a==2.0.0\nb==1.1.0\nc==1.0.1\n")
+
+        result = diff(LockfileSource(a), LockfileSource(b))
+        sarif = json.loads(format_sarif(result))
+        results = sarif["runs"][0]["results"]
+
+        levels_by_severity = {
+            r["ruleId"].replace("drift-", ""): r["level"] for r in results
+        }
+        assert levels_by_severity["major"] == "error"
+        assert levels_by_severity["minor"] == "warning"
+        assert levels_by_severity["patch"] == "note"
+
+
+class TestAuditCommandOutputFormats:
+    def test_json_flag_outputs_valid_json(self, tmp_path: Path):
+        a = tmp_path / "a.txt"
+        a.write_text("django==4.2.0\n")
+        b = tmp_path / "b.txt"
+        b.write_text("django==5.0.0\n")
+
+        result = CliRunner().invoke(audit_command, [str(a), str(b), "--json"])
+        assert result.exit_code == 0
+        payload = json.loads(result.output)
+        assert payload["summary"]["total"] == 1
+
+    def test_sarif_flag_outputs_valid_sarif(self, tmp_path: Path):
+        a = tmp_path / "a.txt"
+        a.write_text("django==4.2.0\n")
+        b = tmp_path / "b.txt"
+        b.write_text("django==5.0.0\n")
+
+        result = CliRunner().invoke(audit_command, [str(a), str(b), "--sarif"])
+        assert result.exit_code == 0
+        sarif = json.loads(result.output)
+        assert sarif["version"] == "2.1.0"
+
+    def test_json_and_sarif_mutually_exclusive(self, tmp_path: Path):
+        a = tmp_path / "a.txt"
+        a.write_text("django==4.2.0\n")
+        b = tmp_path / "b.txt"
+        b.write_text("django==5.0.0\n")
+
+        result = CliRunner().invoke(
+            audit_command, [str(a), str(b), "--json", "--sarif"]
+        )
+        assert result.exit_code == 2
+        assert "mutually exclusive" in result.output.lower()

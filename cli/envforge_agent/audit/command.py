@@ -7,7 +7,7 @@ import click
 from rich.console import Console
 
 from .differ import diff
-from .formatters import format_text
+from .formatters import format_json, format_sarif, format_text
 from .sources import LocalEnvironment, LockfileSource, Source
 
 
@@ -36,9 +36,21 @@ def _resolve_source(spec: str) -> Source:
 
 
 @click.command("audit")
-@click.argument("source_a", required=True)
-@click.argument("source_b", required=True)
-def audit_command(source_a: str, source_b: str) -> None:
+@click.argument("source_a")
+@click.argument("source_b")
+@click.option(
+    "--json",
+    "as_json",
+    is_flag=True,
+    help="Emit results as JSON to stdout instead of a Rich table.",
+)
+@click.option(
+    "--sarif",
+    "as_sarif",
+    is_flag=True,
+    help="Emit results as SARIF v2.1.0 to stdout (for CI/security tooling).",
+)
+def audit_command(source_a: str, source_b: str, as_json: bool, as_sarif: bool) -> None:
     """Compare two environments and report drift.
 
     SOURCE_A and SOURCE_B can each be either:
@@ -65,5 +77,13 @@ def audit_command(source_a: str, source_b: str) -> None:
     except RuntimeError as exc:
         err_console.print(f"[ERROR] {exc}")
         sys.exit(1)
+    if as_json and as_sarif:
+        err_console.print("[ERROR] --json and --sarif are mutually exclusive.")
+        sys.exit(2)
 
-    format_text(result, console)
+    if as_json:
+        click.echo(format_json(result))
+    elif as_sarif:
+        click.echo(format_sarif(result))
+    else:
+        format_text(result, console)

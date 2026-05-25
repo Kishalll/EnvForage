@@ -143,9 +143,9 @@ class OpenAIProvider(LLMProvider):
                             if response.status_code == 429:
                                 retry_after = response.headers.get("Retry-After")
                                 if retry_after and retry_after.isdigit():
-                                    delay = int(retry_after)
+                                    delay = float(retry_after)
                                 else:
-                                    delay = base_delay**attempt
+                                    delay = float(base_delay**attempt)
 
                                 logger.warning(
                                     "OpenAI rate limited (429). Retrying in %s seconds... (Attempt %d/%d)",
@@ -198,7 +198,7 @@ class OpenAIProvider(LLMProvider):
                             )
                             break
 
-                        delay = base_delay**attempt
+                        delay = float(base_delay**attempt)
                         logger.warning(
                             "Transient network error during OpenAI stream: %s. Retrying in %d seconds... (Attempt %d/%d)",
                             str(e), delay, attempt + 1, max_retries

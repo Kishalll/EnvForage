@@ -203,13 +203,13 @@ profiles:
     tags: [langchain, rag, llm, vector-db, cpu]
     os_support: [LINUX, WSL, WIN]
     cuda_required: false
-    python_versions: ["3.10", "3.11", "3.12", "3.13"]
+    python_versions: ["3.10", "3.11", "3.12"]
     cuda_versions: []
     status: ACTIVE
-    last_validated: "2026-05-25"
+    last_validated: "2026-05-26"
     packages:
       - name: langchain
-        version_spec: "0.2.0"
+        version_spec: "0.3.0"
         install_order: 0
       - name: chromadb
         version_spec: "0.5.0"

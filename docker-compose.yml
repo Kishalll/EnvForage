@@ -58,7 +58,7 @@ services:
       DEBUG: "true"
       SECRET_KEY: dev_secret_key_change_in_production
       ENVFORGE_LLM_PROVIDER: mock
-      OLLAMA_HOST: http://llm:11434
+      OLLAMA_BASE_URL: http://llm:11434
 
     volumes:
       - ./backend:/app

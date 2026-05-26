@@ -9,6 +9,7 @@ Future sources (poetry.lock, uv.lock, remote envforge envs via #85's REST API)
 slot in by subclassing Source and yielding Package instances.
 """
 from __future__ import annotations
+import tomllib
 import json
 import subprocess
 import sys
@@ -120,3 +121,75 @@ class LockfileSource(Source):
             version = version_part.split(";", 1)[0].strip()
             if name and version:
                 yield Package(name=name, version=version)
+                
+class ConfigFileSource(Source):
+    """Reads a pyproject.toml file (Poetry format) and extracts dependencies.
+
+    Currently supports the `[tool.poetry.dependencies]` section. Version
+    specifiers with leading operators (`^`, `~`, `>=`, etc.) have the operator
+    stripped so they can be compared against other sources. The `python`
+    requirement is excluded since it's the Python version, not a dependency.
+    Git, path, and URL dependencies are skipped (no comparable version).
+
+    PEP 621 `[project.dependencies]` support is intentionally deferred to a
+    follow-up PR — that format uses PEP 440 specifier strings in a list
+    rather than a name->spec mapping, so it warrants distinct parsing logic.
+    """
+
+    def __init__(self, path) -> None:
+        self.path = Path(path)
+        self.name = f"pyproject:{self.path.name}"
+
+    def packages(self) -> Iterator[Package]:
+        try:
+            with open(self.path, "rb") as f:
+                data = tomllib.load(f)
+        except FileNotFoundError as exc:
+            raise RuntimeError(f"Config file not found: {self.path}") from exc
+        except tomllib.TOMLDecodeError as exc:
+            raise RuntimeError(f"Invalid TOML in {self.path}: {exc}") from exc
+        except UnicodeDecodeError as exc:
+            raise RuntimeError(
+                f"Config file is not valid UTF-8: {self.path} ({exc.reason})"
+            ) from exc
+        except (PermissionError, IsADirectoryError, OSError) as exc:
+            raise RuntimeError(
+                f"Could not read config file {self.path}: {exc}"
+            ) from exc
+
+        deps = data.get("tool", {}).get("poetry", {}).get("dependencies", {})
+        for name, spec in deps.items():
+            if name == "python":
+                continue
+            version = self._extract_version(spec)
+            if version:
+                yield Package(name=name, version=version)
+
+    @staticmethod
+    def _extract_version(spec) -> Optional[str]:
+        """Extract a comparable version string from a Poetry dep spec.
+
+        spec is either:
+        - a string like "2.31.0", "^2.31", "==2.31", ">=2.31,<3"
+        - a dict like {"version": "2.31.0", "extras": [...]}
+        - a dict like {"git": "..."} or {"path": "..."} -> no comparable version
+
+        Returns None if no usable version can be extracted.
+        """
+        if isinstance(spec, dict):
+            spec = spec.get("version")
+            if not spec:
+                return None  # git, path, or url dep
+
+        if not isinstance(spec, str):
+            return None
+
+        # Strip leading operators: ^, ~, ==, >=, <=, >, <, !=
+        stripped = spec.lstrip("^~<>=!")
+        # Take the first part of compound specifiers like ">=2.31,<3"
+        stripped = stripped.split(",")[0].strip()
+
+        # Must look like a version (starts with a digit)
+        if stripped and stripped[0].isdigit():
+            return stripped
+        return None

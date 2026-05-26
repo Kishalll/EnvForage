@@ -2,7 +2,7 @@
 from .command import audit_command
 from .differ import diff
 from .models import AuditResult, DiffEntry, Package
-from .sources import LocalEnvironment, LockfileSource, Source
+from .sources import ConfigFileSource,LocalEnvironment, LockfileSource, Source
 
 __all__ = [
     "audit_command",
@@ -13,4 +13,5 @@ __all__ = [
     "Source",
     "LocalEnvironment",
     "LockfileSource",
+    "ConfigFileSource",
 ]

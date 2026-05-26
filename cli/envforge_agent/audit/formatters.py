@@ -77,6 +77,7 @@ def format_text(result: AuditResult, console: Console) -> None:
         f"\n[bold]Summary:[/] {len(result.differences)} differences "
         f"({summary}); {result.common_count} matching packages."
     )
+    console.print(f"[bold]Drift score:[/] {result.drift_score}")
     
 # Mapping from envforge severity to SARIF level
 # SARIF levels: error, warning, note, none
@@ -116,6 +117,7 @@ def format_json(result: AuditResult) -> str:
             "total": len(result.differences),
             "by_severity": counts,
             "common_count": result.common_count,
+            "drift_score": result.drift_score,
         },
     }
     return json.dumps(payload, indent=2, sort_keys=False)
@@ -194,6 +196,11 @@ def format_sarif(result: AuditResult) -> str:
                     }
                 ],
                 "results": results,
+                "properties": {
+                    "driftScore": result.drift_score,
+                    "totalDifferences": len(result.differences),
+                    "commonCount": result.common_count,
+                },
             }
         ],
     }

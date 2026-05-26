@@ -8,7 +8,7 @@ from rich.console import Console
 
 from .differ import diff
 from .formatters import format_json, format_sarif, format_text
-from .sources import LocalEnvironment, LockfileSource, Source
+from .sources import ConfigFileSource ,LocalEnvironment, LockfileSource, Source
 
 
 console = Console()
@@ -19,19 +19,22 @@ def _resolve_source(spec: str) -> Source:
     """Convert a CLI source string into a Source instance.
 
     Accepted forms:
-        "local"             -> the active Python environment
-        path to a file      -> LockfileSource (must exist on disk)
+        "local"                  -> the active Python environment
+        path to .toml file       -> ConfigFileSource (Poetry pyproject.toml)
+        path to any other file   -> LockfileSource (requirements.txt format)
     """
     if spec == "local":
         return LocalEnvironment()
 
     path = Path(spec)
     if path.exists() and path.is_file():
+        if path.suffix == ".toml":
+            return ConfigFileSource(path)
         return LockfileSource(path)
 
     raise click.BadParameter(
         f"Could not interpret source '{spec}'. "
-        f"Use 'local' or a path to a lockfile."
+        f"Use 'local', a path to a lockfile, or a path to a pyproject.toml."
     )
 
 
@@ -50,7 +53,12 @@ def _resolve_source(spec: str) -> Source:
     is_flag=True,
     help="Emit results as SARIF v2.1.0 to stdout (for CI/security tooling).",
 )
-def audit_command(source_a: str, source_b: str, as_json: bool, as_sarif: bool) -> None:
+@click.option(
+    "--strict",
+    is_flag=True,
+    help="Exit with code 1 if any drift is detected. For CI gating.",
+)
+def audit_command(source_a: str, source_b: str, as_json: bool, as_sarif: bool, strict: bool) -> None:
     """Compare two environments and report drift.
 
     SOURCE_A and SOURCE_B can each be either:
@@ -87,3 +95,6 @@ def audit_command(source_a: str, source_b: str, as_json: bool, as_sarif: bool) -
         click.echo(format_sarif(result))
     else:
         format_text(result, console)
+    
+    if strict and result.has_drift():
+        sys.exit(1)

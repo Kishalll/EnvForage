@@ -9,7 +9,16 @@ def _normalize_name(name: str) -> str:
     """PEP 503 normalization: lowercase, collapse runs of _-. to single hyphen."""
     return re.sub(r"[-_.]+", "-", name).lower()
 
-
+# Weighted contribution of each severity to the overall drift score.
+# Major changes count heavily (semver-breaking); patch changes minimally.
+SEVERITY_WEIGHTS = {
+    "major": 10,
+    "minor": 3,
+    "patch": 1,
+    "added": 2,
+    "removed": 2,
+    "other": 1,
+}
 @dataclass(frozen=True)
 class Package:
     """Resolved package entry: name (normalized per PEP 503) + version string.
@@ -47,3 +56,14 @@ class AuditResult:
 
     def has_drift(self) -> bool:
         return len(self.differences) > 0
+    
+    @property
+    def drift_score(self) -> int:
+        """Weighted single-number drift indicator (0 = perfect match).
+
+        Heavier weight for breaking changes (major) so a single major drift
+        ranks higher than several patch drifts. Useful as a CI threshold.
+        """
+        return sum(
+            SEVERITY_WEIGHTS.get(d.severity, 1) for d in self.differences
+        )

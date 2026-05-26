@@ -194,6 +194,7 @@ profiles:
       - name: scipy
         version_spec: "1.13.0"
         install_order: 7
+
   - slug: langchain-rag
     name: "LangChain RAG"
     description: >

@@ -60,7 +60,7 @@ def _build_jinja_env() -> Environment:
 
         undefined=StrictUndefined,  # Error on undefined variables
         autoescape=False,  # Shell scripts are NOT HTML — no escaping
-
+    )
 
 @lru_cache(maxsize=16)
 def _get_jinja_env(custom_template_dir: Path | None) -> SandboxedEnvironment:

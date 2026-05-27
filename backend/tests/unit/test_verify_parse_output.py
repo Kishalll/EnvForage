@@ -1,5 +1,4 @@
 """Unit tests for parse_output in app/api/v1/verify.py — covers Issue #275."""
-import pytest
 from app.api.v1.verify import parse_output
 
 

@@ -40,6 +40,7 @@ class Settings(BaseSettings):
     # Required in production for multi-worker correctness.
     # Format: redis://:password@host:port/db  or  redis://host:port/db
     redis_url: str | None = None
+    resolver_cache_ttl_seconds: int = 86400
 
     # ── CORS ─────────────────────────────────────────────────
     allowed_origins: str = "http://localhost:3000"

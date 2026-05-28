@@ -321,7 +321,10 @@ class TestPythonDetector:
         result = _inspect_python(sys.executable)
         assert result is not None
         assert result.version
-        assert result.path == sys.executable or Path(result.path).resolve() == Path(sys.executable).resolve()
+        path_str = result.path
+        if path_str.startswith("<USER_HOME>"):
+            path_str = path_str.replace("<USER_HOME>", str(Path.home()), 1)
+        assert path_str == sys.executable or Path(path_str).resolve() == Path(sys.executable).resolve()
 
 
 # ── System Detector tests ─────────────────────────────────────────────────────

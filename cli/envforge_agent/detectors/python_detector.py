@@ -15,6 +15,7 @@ Strategy:
 from __future__ import annotations
 
 import json
+import os
 import platform
 import subprocess
 import sys
@@ -28,6 +29,30 @@ _PROBE_VERSIONS = ["3.8", "3.9", "3.10", "3.11", "3.12","3.13"]
 # Inspector script run inside each discovered Python to get its full info
 _INSPECTOR = """
 import sys, json, os
+from pathlib import Path
+
+def sanitize_path(path):
+    if not path:
+        return path
+
+    home_dir = str(Path.home())
+
+    try:
+        normalized_path = os.path.normcase(os.path.normpath(path))
+        normalized_home = os.path.normcase(os.path.normpath(home_dir))
+
+        if (
+            normalized_path == normalized_home
+            or normalized_path.startswith(normalized_home + os.sep)
+        ):
+            relative_part = path[len(home_dir):]
+            return "<USER_HOME>" + relative_part
+
+    except Exception:
+        pass
+
+    return path
+
 prefix = getattr(sys, 'prefix', sys.executable)
 base = getattr(sys, 'base_prefix', prefix)
 is_venv = prefix != base
@@ -39,9 +64,9 @@ except ImportError:
     pip_ver = None
 print(json.dumps({
     "version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
-    "path": sys.executable,
+    "path": sanitize_path(sys.executable),
     "is_venv": is_venv,
-    "venv_path": venv_path,
+    "venv_path": sanitize_path(venv_path),
     "pip_version": pip_ver,
 }))
 """

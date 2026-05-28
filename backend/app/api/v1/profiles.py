@@ -2,11 +2,12 @@
 
 import logging
 
-from fastapi import APIRouter, Path, Query, status
+from fastapi import APIRouter, Depends, Path, Query, status
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from app.api.deps import DB
 from app.core.exceptions import ConflictError, EntityNotFoundError, InternalServerError
+from app.middleware.rate_limit import general_rate_limit
 from app.schemas.profile import (
     ProfileCreateSchema,
     ProfileDetailSchema,
@@ -139,7 +140,9 @@ async def get_profile(
     },
 )
 async def create_profile(
-    profile_in: ProfileCreateSchema, db: DB
+    profile_in: ProfileCreateSchema,
+    db: DB,
+    _rate_limit: None = Depends(general_rate_limit),
 ) -> ProfileDetailSchema:
     """
     Create a new environment profile.
@@ -185,4 +188,3 @@ async def delete_profile(
             resource=f"Profile '{slug}'",
             error_code="PROFILE_NOT_FOUND",
         )
-

@@ -7,6 +7,7 @@ Implements a sliding-window rate limiter with two backends:
 
 Design:
     - Rate limits are per-client-IP
+    - X-Forwarded-For is only trusted when the direct peer is a known private proxy
     - AI endpoints get stricter limits than general API endpoints
     - Returns standard HTTP 429 with Retry-After header
     - Configurable via Settings (rate_limit_ai_rpm, rate_limit_general_rpm)
@@ -23,7 +24,7 @@ Usage::
     ):
         ...
 """
-
+import ipaddress
 import logging
 import time
 from abc import ABC, abstractmethod
@@ -33,6 +34,18 @@ from typing import Any
 from fastapi import HTTPException, Request
 
 from app.config import get_settings
+
+# Private and loopback CIDRs that may legitimately set X-Forwarded-For.
+# Only peers whose address falls within these ranges are considered trusted
+# proxies; all other peers must be rate-limited by their direct IP.
+_TRUSTED_PROXY_CIDRS: tuple[ipaddress.IPv4Network | ipaddress.IPv6Network, ...] = (
+    ipaddress.ip_network("10.0.0.0/8"),
+    ipaddress.ip_network("172.16.0.0/12"),
+    ipaddress.ip_network("192.168.0.0/16"),
+    ipaddress.ip_network("127.0.0.0/8"),
+    ipaddress.ip_network("::1/128"),
+    ipaddress.ip_network("fc00::/7"),
+)
 
 logger = logging.getLogger(__name__)
 
@@ -180,7 +193,7 @@ class RedisBackend(RateLimitBackend):
             # Find when the oldest request in the window expires
             oldest = await self._client.zrange(key, 0, 0, withscores=True)
             if oldest:
-                retry_after = int(oldest[0][1] + window_seconds - now) + 1
+                retry_after = int(float(oldest[0][1]) + window_seconds - now) + 1
             else:
                 retry_after = int(window_seconds)
             return False, {
@@ -312,11 +325,18 @@ class RateLimiter:
             )
 
     def _get_client_ip(self, request: Request) -> str:
-        """Extract client IP, respecting X-Forwarded-For behind proxies."""
-        forwarded = request.headers.get("x-forwarded-for")
-        if forwarded:
-            return forwarded.split(",")[0].strip()
-        return request.client.host if request.client else "unknown"
+        """Extract client IP, trusting X-Forwarded-For only from known proxy peers."""
+        peer = request.client.host if request.client else None
+        if peer:
+            try:
+                peer_addr = ipaddress.ip_address(peer)
+                if any(peer_addr in cidr for cidr in _TRUSTED_PROXY_CIDRS):
+                    forwarded = request.headers.get("x-forwarded-for")
+                    if forwarded:
+                        return forwarded.split(",")[0].strip()
+            except ValueError:
+                pass
+        return peer or "unknown"
 
 
 # ── Pre-configured limiters ───────────────────────────────────────────────────

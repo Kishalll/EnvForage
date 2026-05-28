@@ -6,11 +6,16 @@ Scenarios:
   "mixed" → HIGH + MEDIUM + LOW fixes (tests full pipeline)
   "gate"  → score below LOW_CONFIDENCE_GATE (tests suppression)
 """
-from __future__ import annotations
+
+import uuid
 
 from pydantic import BaseModel
 
-from ..models import FixConfidenceLevel, SuggestedFix
+from ..models import (
+    FixConfidenceLevel,
+    SuggestedFix,
+    TroubleshootResponse,
+)
 from .base import LLMProvider
 
 _HIGH_FIXES = [
@@ -113,9 +118,6 @@ class MockProvider(LLMProvider):
     response_schema: type[BaseModel] | None = None,
     response_model: type[BaseModel] | None = None,
     ) -> BaseModel:
-
-        from ..models import TroubleshootResponse
-        import uuid
 
         if self._scenario == "high":
             fixes = _HIGH_FIXES

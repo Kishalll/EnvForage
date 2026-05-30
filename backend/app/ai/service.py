@@ -17,7 +17,9 @@ import uuid
 from collections.abc import AsyncIterator
 from datetime import datetime
 
+from fastapi import HTTPException, status
 from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError, OperationalError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.ai.models import SuggestedFix, TroubleshootRequest, TroubleshootResponse
@@ -274,8 +276,21 @@ class AITroubleshootService:
             )
             result = await db.execute(stmt)
             return list(result.scalars().all())
-        except Exception as exc:
-            logger.error("Failed to fetch session history for %s: %s", session_id, exc)
+
+        except OperationalError as exc:
+            logger.critical(
+                "Critical database connectivity failure for session %s: %s",
+                session_id, exc
+            )
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Database service is temporarily unavailable. Unable to process history request."
+            )
+        except SQLAlchemyError as exc:
+            logger.error(
+                "Transient database error fetching session history for %s: %s",
+                session_id, exc
+            )
             return []
 
     # ── Private helpers ───────────────────────────────────────────────────

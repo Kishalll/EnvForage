@@ -180,13 +180,27 @@ function WizardContent() {
                   key={p.slug} 
                   onClick={() => {
                     setSelectedProfile(p.slug);
-                    if (p.python_versions && p.python_versions.length > 0) {
+
+                    if (p.python_versions?.length > 0) {
                       setPythonVersion(p.python_versions[0]);
                     }
-                    if (p.cuda_required && p.cuda_versions && p.cuda_versions.length > 0) {
+
+                    if (p.cuda_required && p.cuda_versions?.length > 0) {
                       setCudaVersion(p.cuda_versions[0]);
                     } else {
                       setCudaVersion("");
+                    }
+
+                    const isWin =
+                      p.os_support.includes("WIN") &&
+                      !p.os_support.includes("LINUX");
+
+                    if (isWin) {
+                      setTargetOs("WIN");
+
+                      setOutputFormats(prev =>
+                        prev.map(f => (f === "setup.sh" ? "setup.ps1" : f))
+                      );
                     }
                   }}
                   style={{ 

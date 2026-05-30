@@ -6,6 +6,7 @@ import { ThemeProvider } from "./providers";
 import Link from "next/link";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -78,12 +79,13 @@ export default function RootLayout({
           <Navbar />
 
           {/* Main Content */}
-          <main style={{ minHeight: "calc(100vh - 140px)" }}>
+          <main style={{ minHeight: "calc(100vh - 140px)", paddingTop: "76px" }}>
             {children}
           </main>
 
           {/* Footer */}
           <Footer />
+          <ScrollToTop />
         </ThemeProvider>
       </body>
     </html>

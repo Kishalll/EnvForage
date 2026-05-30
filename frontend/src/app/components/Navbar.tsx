@@ -25,9 +25,12 @@ export default function Navbar() {
     <header 
       className="glass-nav" 
       style={{ 
-        position: "sticky", 
-        top: 0, 
-        zIndex: 50, 
+        position: "fixed", 
+        top: 0,
+        left: 0,
+        right: 0,
+        width: "100%",
+        zIndex: 100, 
         padding: "0.85rem 0",
         boxShadow: "0 4px 30px rgba(0, 0, 0, 0.03)",
       }}

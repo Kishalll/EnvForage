@@ -67,6 +67,10 @@ export default function HomePage() {
             gridTemplateColumns: "1fr 1fr",
             gap: "4rem",
             alignItems: "center",
+            justifyContent: "center",
+            fontSize: "2rem",
+            fontWeight: 700,
+            color: "var(--brand-primary)",
           }}
         >
           {/* LEFT */}

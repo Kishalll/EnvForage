@@ -84,8 +84,9 @@ export default function HomePage() {
         <div className="container" style={{ maxWidth: "1200px" }}>
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <h1
+              className="hero-title"
               style={{
-                fontSize: "clamp(4rem, 8vw, 7.5rem)",
+                fontSize: "clamp(4rem, 8vw, 7.5rem)", // Overridden by hero-title on mobile
                 fontWeight: 900,
                 lineHeight: 1.05,
                 letterSpacing: "-0.04em",
@@ -162,7 +163,7 @@ export default function HomePage() {
               </Link>
             </div>
 
-            <div style={{ display: "flex", gap: "4rem", borderTop: "1px solid var(--border-strong)", paddingTop: "2.5rem" }}>
+            <div className="flex-col-mobile" style={{ display: "flex", gap: "2.5rem", borderTop: "1px solid var(--border-strong)", paddingTop: "2.5rem" }}>
               <div>
                 <h3 style={{ fontSize: "2.5rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.25rem", letterSpacing: "-0.03em" }}>18k+</h3>
                 <p style={{ fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-secondary)", fontWeight: 600 }}>Known-good builds</p>
@@ -190,9 +191,9 @@ export default function HomePage() {
         }}
       >
         {/* Terminal & Feature Section */}
-        <section style={{ paddingTop: '8rem', paddingBottom: '6rem' }}>
+        <section className="p-mobile-md" style={{ paddingTop: '8rem', paddingBottom: '6rem' }}>
           <div className="container">
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(450px, 1fr))", gap: "4rem", alignItems: "center" }}>
+            <div className="stack-on-mobile" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 450px), 1fr))", gap: "4rem", alignItems: "center" }}>
               <motion.div initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
                 <h2 style={{ fontSize: "3.5rem", fontWeight: 800, lineHeight: 1.1, color: "var(--text-primary)", marginBottom: "1.5rem" }}>
                   One Command.<br/>Zero Headaches.
@@ -236,7 +237,7 @@ export default function HomePage() {
         </section>
 
         {/* Powerful Features Grid */}
-        <section style={{ paddingTop: '6rem', paddingBottom: '8rem', borderTop: "1px solid var(--border-subtle)" }}>
+        <section className="p-mobile-md" style={{ paddingTop: '6rem', paddingBottom: '8rem', borderTop: "1px solid var(--border-subtle)" }}>
           <div className="container">
             <h2 style={{ fontSize: "3rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "1rem" }}>
               Powerful Features for AI Developers
@@ -250,7 +251,8 @@ export default function HomePage() {
               initial="hidden"
               whileInView="show"
               viewport={{ once: true, margin: "-100px" }}
-              style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))", gap: "4rem 2rem" }}
+              className="stack-on-mobile"
+              style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 400px), 1fr))", gap: "4rem 2rem" }}
             >
               {featureCards.map((feat, i) => {
                 const Icon = feat.icon;
@@ -274,9 +276,9 @@ export default function HomePage() {
         </section>
 
         {/* Quotes Section */}
-        <section style={{ background: "var(--bg-tertiary)", padding: "8rem 0" }}>
+        <section className="p-mobile-md" style={{ background: "var(--bg-tertiary)", padding: "8rem 0" }}>
           <div className="container">
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))", gap: "4rem" }}>
+            <div className="stack-on-mobile" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 400px), 1fr))", gap: "4rem" }}>
               <div style={{ color: "var(--text-inverse)" }}>
                 <p style={{ fontSize: "2.5rem", fontWeight: 600, fontStyle: "italic", lineHeight: 1.3, marginBottom: "2rem", fontFamily: "Georgia, serif" }}>
                   "Dependency hell is not a rite of passage. It's a waste of time."
@@ -294,7 +296,7 @@ export default function HomePage() {
         </section>
 
         {/* Bottom CTA */}
-        <section style={{ padding: "8rem 0", textAlign: "center" }}>
+        <section className="p-mobile-md text-center-mobile" style={{ padding: "8rem 0", textAlign: "center" }}>
           <div className="container">
             <h2 style={{ fontSize: "3.5rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "1.5rem" }}>Download EnvForage</h2>
             <p style={{ fontSize: "1.25rem", color: "var(--text-secondary)", marginBottom: "3rem" }}>Available for all major platforms. Start eliminating dependency hell today.</p>

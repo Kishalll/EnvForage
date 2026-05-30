@@ -29,7 +29,7 @@
   --brand-secondary: #facc15;
   --brand-accent: #10b981; /* Emerald for success */
   
-  --highlight-strip: #F9D89B; /* User requested same color in both modes */
+  --highlight-strip: rgba(250, 204, 21, 0.2); /* Muted translucent yellow for dark mode */
   
   --border-subtle: rgba(255, 255, 255, 0.05);
   --border-strong: rgba(255, 255, 255, 0.15);

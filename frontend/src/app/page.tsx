@@ -1,6 +1,6 @@
 "use client";
 
-import { Variants, motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import {
 	CheckCircle2,
 	Package,

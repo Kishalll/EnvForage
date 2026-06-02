@@ -6,7 +6,7 @@ import hashlib
 import json
 import logging
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -203,7 +203,7 @@ async def generate_scripts(
         overrides=request.overrides or {},
         status="completed",
         resolved_env=resolved.to_dict(),
-        completed_at=datetime.utcnow(),
+        completed_at=datetime.now(UTC),
     )
     db.add(job)
 

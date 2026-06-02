@@ -6,7 +6,7 @@ import json
 import logging
 import time
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends
 
@@ -94,7 +94,7 @@ async def diagnose(
         if report.active_python
         else None,
         driver_version=report.gpus[0].driver_version if report.gpus else None,
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(UTC),
     )
     db.add(db_report)
     await db.flush()
@@ -307,7 +307,7 @@ def _log_explain_audit(
             provider=provider,
             tokens_used=tokens_used,
             latency_ms=latency_ms,
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
         )
         db.add(log)
     except Exception as exc:

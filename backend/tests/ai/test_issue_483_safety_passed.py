@@ -59,6 +59,7 @@ class TestSafetyPassedNotMisused:
                         mock_db = AsyncMock()
                         mock_request = MagicMock()
                         mock_request.session_id = None
+                        mock_request.user_description = "some problem"
                         mock_request.model_dump_json.return_value = "{}"
 
                         await service.troubleshoot(mock_request, mock_db)
@@ -110,6 +111,7 @@ class TestSafetyPassedNotMisused:
                         mock_db = AsyncMock()
                         mock_request = MagicMock()
                         mock_request.session_id = None
+                        mock_request.user_description = "some problem"
                         mock_request.model_dump_json.return_value = "{}"
 
                         await service.troubleshoot(mock_request, mock_db)
@@ -159,6 +161,7 @@ class TestSafetyPassedNotMisused:
                         mock_db = AsyncMock()
                         mock_request = MagicMock()
                         mock_request.session_id = None
+                        mock_request.user_description = "some problem"
                         mock_request.model_dump_json.return_value = "{}"
 
                         await service.troubleshoot(mock_request, mock_db)
@@ -189,13 +192,14 @@ class TestSafetyPassedNotMisused:
             })
 
         with patch.object(service, "_validate_response_safety",
-                          side_effect=SafetyViolationError("rm -rf detected")):
+                          side_effect=SafetyViolationError(pattern="rm -rf", description="rm -rf detected")):
             with patch.object(service, "_log_audit",
                               side_effect=capture_log_audit):
                 with patch("app.ai.service.record_ai_token_usage"):
                     mock_db = AsyncMock()
                     mock_request = MagicMock()
                     mock_request.session_id = None
+                    mock_request.user_description = "some problem"
                     mock_request.model_dump_json.return_value = "{}"
 
                     with pytest.raises(SafetyViolationError):

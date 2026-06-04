@@ -18,7 +18,6 @@ import asyncio
 import urllib.parse
 
 import click
-import asyncio
 import httpx
 from rich.console import Console
 from rich.panel import Panel

@@ -106,7 +106,7 @@ export default function Navbar() {
 				<div className="nav-actions">
 					<ThemeToggle />
 					<a
-						href="#"
+						href="https://discord.gg/N2GKNRzDV"
 						target="_blank"
 						rel="noreferrer"
 						className="nav-hide"

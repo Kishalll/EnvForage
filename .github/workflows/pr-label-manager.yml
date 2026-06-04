@@ -1,7 +1,7 @@
 name: PR Label & Quality Manager
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, edited, synchronize, reopened]
   pull_request_review:
     types: [submitted, edited, dismissed]
@@ -31,7 +31,6 @@ jobs:
             const PROGRAM_REGEX = /^(gssoc|ssoc|nsoc)/i;
             
             const DIFFICULTY_LABELS = ['level1', 'level2', 'level3'];
-            const EFFORT_LABELS = ['easy', 'medium', 'hard'];
             const TYPE_LABELS = [
               'type:bug',
               'type:feature',
@@ -142,7 +141,6 @@ jobs:
             // --- 3. MANDATORY LABEL ENFORCEMENT & CONFLICT CHECKS ---
             const foundPrograms = currentLabels.filter(l => PROGRAM_REGEX.test(l));
             const foundDifficulty = currentLabels.filter(l => DIFFICULTY_LABELS.includes(l));
-            const foundEffort = currentLabels.filter(l => EFFORT_LABELS.includes(l));
             const foundTypes = currentLabels.filter(l => TYPE_LABELS.includes(l));
             const foundDifficulty2 = currentLabels.filter(l => DIFFICULTY2_LABELS.includes(l));
 
@@ -171,16 +169,6 @@ jobs:
               const remove = foundDifficulty.slice(1);
               labelsToRemove.push(...remove);
               console.log(`Difficulty violation: Keeping '${keep}', removing: ${remove.join(', ')}`);
-            }
-
-            // Effort labels validation (Exclusivity: only ONE allowed)
-            if (foundEffort.length === 0) {
-              labelsToAdd.push('easy');
-            } else if (foundEffort.length > 1) {
-              const keep = foundEffort[0];
-              const remove = foundEffort.slice(1);
-              labelsToRemove.push(...remove);
-              console.log(`Effort violation: Keeping '${keep}', removing: ${remove.join(', ')}`);
             }
 
             // Type labels validation
@@ -342,7 +330,8 @@ jobs:
               const res = await github.rest.issues.listComments({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: prNumber
+                issue_number: prNumber,
+                per_page: 100
               });
               issueCommentsList = res.data;
             } catch (err) {

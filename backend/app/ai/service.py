@@ -438,7 +438,7 @@ class AITroubleshootService:
                     session_id,
                     fix.step,
                     fix.title,
-                    fix.confidence_score,
+                    fix.confidence_score or 0.0,
                     LOW_CONFIDENCE_GATE,
                 )
                 suppressed += 1
@@ -475,7 +475,7 @@ class AITroubleshootService:
                 session_id,
                 fix.step,
                 fix.confidence_level.value if fix.confidence_level else "unknown",
-                fix.confidence_score,
+                fix.confidence_score or 0.0,
                 fix.is_matrix_backed,
                 fix.severity,
             )

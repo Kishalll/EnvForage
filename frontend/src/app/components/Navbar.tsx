@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import packageJson from "../../../package.json";
 import { ThemeToggle } from "../providers";
@@ -35,7 +36,6 @@ export default function Navbar() {
 				right: 0,
 				width: "100%",
 				zIndex: 100,
-				padding: "0.85rem 0",
 				boxShadow: "0 4px 30px rgba(0, 0, 0, 0.03)",
 			}}
 		>
@@ -54,6 +54,7 @@ export default function Navbar() {
 							Env<span className="text-gradient">Forage</span>
 						</Link>
 						<span
+							className="nav-hide"
 							style={{
 								color: "var(--text-muted)",
 								fontSize: "0.85rem",

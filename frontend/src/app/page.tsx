@@ -135,6 +135,7 @@ export default function HomePage() {
 						</h1>
 
 						<div
+							className="hero-subtitle"
 							style={{
 								fontSize: "1.25rem",
 								color: "var(--text-secondary)",
@@ -151,13 +152,9 @@ export default function HomePage() {
 								}}
 							>
 								EnvForage generates 100% deterministic, hardware-aware setup
-							</span>
-							<br />
+							</span>{" "}
 							scripts for <strong>PyTorch, CUDA</strong>, and your GPU drivers.
-							Validated
-							<br />
-							against a strict compatibility matrix and repaired by an
-							<br />
+							Validated against a strict compatibility matrix and repaired by an
 							integrated LLM — so your stack just works on the first try.
 						</div>
 

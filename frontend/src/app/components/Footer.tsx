@@ -206,7 +206,7 @@ export default function Footer() {
 							}}
 						>
 							<Link
-								href="#"
+								href="https://discord.gg/N2GKNRzDV"
 								target="_blank"
 								style={{
 									color: "var(--text-secondary)",

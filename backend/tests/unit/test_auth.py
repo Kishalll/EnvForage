@@ -51,7 +51,13 @@ def _make_client(db_session: AsyncSession, monkeypatch) -> TestClient:
     async def override_get_db():
         yield db_session
 
+    # Mock the rate limiters so tests bypass rate limiting
+    async def mock_rate_limiter():
+        return None
+
     test_app.dependency_overrides[get_db] = override_get_db
+    test_app.dependency_overrides[auth_module.auth_signup_limiter] = mock_rate_limiter
+    test_app.dependency_overrides[auth_module.auth_signin_limiter] = mock_rate_limiter
     return TestClient(test_app, raise_server_exceptions=True)
 
 

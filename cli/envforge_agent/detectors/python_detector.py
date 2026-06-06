@@ -174,7 +174,7 @@ def _inspect_python(binary: str) -> PythonInfo | None:
             venv_path=data.get("venv_path"),
             pip_version=data.get("pip_version"),
         )
-    except (FileNotFoundError, subprocess.TimeoutExpired,
+    except (OSError, FileNotFoundError, subprocess.TimeoutExpired,
             json.JSONDecodeError, KeyError, ValueError):
         return None
 

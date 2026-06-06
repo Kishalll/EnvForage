@@ -176,7 +176,7 @@
 
 ## Milestone 13: Telemetry Observability & Logging
 - [x] **Step 145: Prometheus Metrics Client Configuration** (Target: `backend/app/main.py`)
-- [ ] **Step 146: API Latency Histogram Endpoint** (Target: `backend/app/api/v1/metrics.py`)
+- [x] **Step 146: API Latency Histogram Endpoint** (Target: `backend/app/api/v1/metrics.py`)
 - [x] **Step 147: Database Query Performance Profiler** (Target: `backend/app/database.py`)
 - [x] **Step 148: Connection Pool Metrics Tracker** (Target: `backend/app/database.py`)
 - [x] **Step 149: Structured JSON Logging (structlog)** (Target: `backend/app/core/logging.py`)

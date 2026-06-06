@@ -144,7 +144,7 @@
 - [x] **Step 117: Environment Audit Command** (Target: `cli/envforge_agent/audit/command.py`)
 - [x] **Step 118: Audit Differ Logic** (Target: `cli/envforge_agent/audit/differ.py`)
 - [x] **Step 119: Rollback Setup Command** (Target: `cli/envforge_agent/cli.py`)
-- [ ] **Step 120: Offline Caching Unit Tests** (Target: `cli/tests/test_cache.py`)
+- [x] **Step 120: Offline Caching Unit Tests** (Target: `cli/tests/test_cache.py`)
 
 ## Milestone 11: Webhooks & Plugin Architecture
 - [x] **Step 121: Webhook Database Models** (Target: `backend/app/models/webhook.py`)

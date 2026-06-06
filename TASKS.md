@@ -43,10 +43,10 @@
 - [x] **Step 30: MDX Code Syntax Highlighting** (Target: `frontend/src/components/mdx/CodeBlock.tsx`)
 - [x] **Step 31: Dynamic Anchor Links** (Target: `frontend/src/components/mdx/Heading.tsx`)
 - [x] **Step 32: Global Search Modal UI** (Target: `frontend/src/components/SearchModal.tsx`)
-- [ ] **Step 33: Client-Side Search Indexer** (Target: `frontend/src/lib/search.ts`)
-- [ ] **Step 34: Documentation Pagination** (Target: `frontend/src/components/DocsPagination.tsx`)
-- [ ] **Step 35: Version Selector Dropdown** (Target: `frontend/src/app/docs/layout.tsx`)
-- [ ] **Step 36: Mobile Drawer Navigation** (Target: `frontend/src/components/DocsMobileNav.tsx`)
+- [x] **Step 33: Client-Side Search Indexer** (Target: `frontend/src/lib/search.ts`)
+- [x] **Step 34: Documentation Pagination** (Target: `frontend/src/components/DocsPagination.tsx`)
+- [x] **Step 35: Version Selector Dropdown** (Target: `frontend/src/app/docs/layout.tsx`)
+- [x] **Step 36: Mobile Drawer Navigation** (Target: `frontend/src/components/DocsMobileNav.tsx`)
 
 ## Milestone 4: Terminal Loader & Diagnostics UX
 - [x] **Step 37: Self-Contained Terminal Loader Frame** (Target: `frontend/src/components/TerminalLoader.tsx`)
@@ -54,13 +54,13 @@
 - [x] **Step 39: Terminal Progress Matrix Indicator** (Target: `frontend/src/components/TerminalLoader.tsx`)
 - [x] **Step 40: Framer Motion Terminal Wrapper** (Target: `frontend/src/components/TerminalLoader.tsx`)
 - [x] **Step 41: Terminal Loader Audio Diagnostics** (Target: `frontend/src/components/TerminalLoader.tsx`)
-- [ ] **Step 42: Telemetry Connection Status Persistence** (Target: `frontend/src/context/TelemetryContext.tsx`)
+- [x] **Step 42: Telemetry Connection Status Persistence** (Target: `frontend/src/context/TelemetryContext.tsx`)
 - [x] **Step 43: Agent Status Navbar Indicator** (Target: `frontend/src/app/components/Navbar.tsx`)
 - [x] **Step 44: Integrate Terminal Loader inside Diagnose View** (Target: `frontend/src/app/diagnose/page.tsx`)
-- [ ] **Step 45: Interactive Diff Viewer for Configuration** (Target: `frontend/src/components/DiffViewer.tsx`)
+- [x] **Step 45: Interactive Diff Viewer for Configuration** (Target: `frontend/src/components/DiffViewer.tsx`)
 - [x] **Step 46: Hardware Diagnostics Export Center** (Target: `frontend/src/app/diagnose/page.tsx`)
 - [x] **Step 47: Connect Loader to Generator Engine** (Target: `frontend/src/app/generate/page.tsx`)
-- [ ] **Step 48: UX Loading Skeletons** (Target: `frontend/src/components/ui/Skeleton.tsx`)
+- [x] **Step 48: UX Loading Skeletons** (Target: `frontend/src/components/ui/Skeleton.tsx`)
 
 ## Milestone 5: Core Backend APIs & Foundation
 - [x] **Step 49: FastAPI Base Configuration** (Target: `backend/app/main.py`)

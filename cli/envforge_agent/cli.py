@@ -31,6 +31,7 @@ from envforge_agent.schemas import DiagnosticReport
 
 from envforge_agent.utils import _map_os_to_target, _extract_python_version
 from envforge_agent.audit import audit_command
+from envforge_agent.config import load_config
 
 console = Console()
 err_console = Console(stderr=True, style="bold red")
@@ -90,9 +91,7 @@ def cli(ctx: click.Context, no_color: bool) -> None:
 )
 @click.option(
     "--api-url",
-    default="http://localhost:8000",
-    show_default=True,
-    envvar="ENVFORGE_API_URL",
+    default=None,
     help="Base URL of the EnvForge API.",
 )
 @click.option(
@@ -120,12 +119,14 @@ def cli(ctx: click.Context, no_color: bool) -> None:
 @click.option(
     "--timeout", "-t",
     type=int,
-    default=30,
-    show_default=True,
+    default=None,
     help="Timeout in seconds for each detector subprocess call. Default: 30s.",
 )
-def diagnose(output: str | None, send: bool, api_url: str, quiet: bool, sarif: bool, timeout: int, output_format: str = "json") -> None:
-    asyncio.run(_diagnose(output, send, api_url, quiet, sarif, timeout, output_format))
+def diagnose(output: str | None, send: bool, api_url: str | None, quiet: bool, sarif: bool, timeout: int | None, output_format: str = "json") -> None:
+    config = load_config()
+    final_api_url = api_url or config.api_url
+    final_timeout = timeout or config.timeout
+    asyncio.run(_diagnose(output, send, final_api_url, quiet, sarif, final_timeout, output_format))
 
 def diagnose(output: str | None, send: bool, api_url: str, quiet: bool, sarif: bool, timeout: int, output_format: str) -> None:
     asyncio.run(_diagnose(output, send, api_url, quiet, sarif, timeout, output_format))
@@ -519,9 +520,8 @@ def _print_verification_summary(data: dict, is_gpu_profile: bool) -> None:
 )
 @click.option(
     "--api-url",
-    default="http://localhost:8000",
-    show_default=True,
-    envvar="ENVFORGE_API_URL",
+    default=None,
+    help="Base URL of the EnvForge API.",
 )
 @click.option(
     "--dry-run",
@@ -529,8 +529,10 @@ def _print_verification_summary(data: dict, is_gpu_profile: bool) -> None:
     default=False,
     help="Preview the names of the scripts and resolved packages without printing their full contents.",
 )
-def fix(report: str, profile: str, api_url: str, dry_run: bool) -> None:
-    asyncio.run(_fix(report, profile, api_url, dry_run))
+def fix(report: str, profile: str, api_url: str | None, dry_run: bool) -> None:
+    config = load_config()
+    final_api_url = api_url or config.api_url
+    asyncio.run(_fix(report, profile, final_api_url, dry_run))
 
 async def _fix(report: str, profile: str, api_url: str, dry_run: bool) -> None:
     """
@@ -710,13 +712,13 @@ def rollback() -> None:
 @cli.command("troubleshoot")
 @click.option(
     "--api-url",
-    default="http://localhost:8000",
-    show_default=True,
-    envvar="ENVFORGE_API_URL",
+    default=None,
     help="Base URL of the EnvForge API.",
 )
-def troubleshoot(api_url: str) -> None:
-    asyncio.run(_troubleshoot(api_url))
+def troubleshoot(api_url: str | None) -> None:
+    config = load_config()
+    final_api_url = api_url or config.api_url
+    asyncio.run(_troubleshoot(final_api_url))
 
 async def _troubleshoot(api_url: str) -> None:
     """

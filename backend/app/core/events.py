@@ -4,7 +4,6 @@ from typing import Any
 
 EventHandler = Callable[[str, dict[str, Any]], Awaitable[None]]
 
-
 class EventDispatcher:
     def __init__(self) -> None:
         self._listeners: dict[str, list[EventHandler]] = {}
@@ -31,6 +30,5 @@ class EventDispatcher:
             tasks = [self._execute_with_retry(handler, event_name, payload) for handler in handlers]
             if tasks:
                 await asyncio.gather(*tasks, return_exceptions=True)
-
 
 dispatcher = EventDispatcher()

@@ -1,5 +1,3 @@
-import asyncio
-import logging
 from typing import Any, Literal
 
 from celery import Celery
@@ -12,13 +10,9 @@ from app.compatibility.errors import (
 from app.compatibility.models import PackageConstraint, ResolvedEnvironment
 from app.compatibility.resolver import CompatibilityResolver
 from app.config import get_settings
-from app.database import AsyncSessionLocal
 from app.schemas.diagnostic import CompatibilityIssue, DiagnoseResponse
-from app.schemas.profile import ProfileFilters
-from app.services.profile_service import list_profiles
 
 settings = get_settings()
-logger = logging.getLogger(__name__)
 
 celery_app = Celery(
     "envforge_worker",
@@ -35,8 +29,8 @@ celery_app.conf.update(
 )
 
 
-@celery_app.task(name="run_diagnose_task")  # type: ignore[untyped-decorator]
-def run_diagnose_task(report_id: str, report_data: dict[str, Any], target_os: Literal["LINUX", "WIN", "WSL"]) -> dict[str, Any]:
+@celery_app.task(name="run_diagnose_task")  # type: ignore
+def run_diagnose_task(report_id: str, report_data: dict[str, Any], target_os: Literal['LINUX', 'WIN', 'WSL']) -> dict[str, Any]:
     """
     Celery task that resolves an environment's dependencies against all profiles
     and returns a structured DiagnoseResponse as a dict.
@@ -46,6 +40,9 @@ def run_diagnose_task(report_id: str, report_data: dict[str, Any], target_os: Li
     issues: list[CompatibilityIssue] = []
     compatible_profiles: list[str] = []
     recommendations: list[str] = []
+
+    import logging
+    logger = logging.getLogger(__name__)
 
     active_python = report_data.get("active_python")
     if not active_python or not active_python.get("version"):
@@ -59,8 +56,15 @@ def run_diagnose_task(report_id: str, report_data: dict[str, Any], target_os: Li
     cuda_version = report_data.get("cuda", {}).get("version") if report_data.get("cuda") else None
     rocm_version = report_data.get("rocm", {}).get("version") if report_data.get("rocm") else None
 
+    # We will fetch profiles from DB directly here in the worker
+    import asyncio
+
+    from app.database import AsyncSessionLocal
+    from app.schemas.profile import ProfileFilters
+    from app.services.profile_service import list_profiles
+
     async def _fetch_profiles() -> list[Any]:
-        all_profiles: list[Any] = []
+        all_profiles = []
         page = 1
         async with AsyncSessionLocal() as db:
             while True:

@@ -17,8 +17,8 @@
 - [x] **Step 8: Form Input Primitives** (Target: `frontend/src/components/ui/Input.tsx`)
 - [x] **Step 9: Global Tooltip Provider** (Target: `frontend/src/components/ui/Tooltip.tsx`)
 - [x] **Step 10: Global Code Block Copy Hook** (Target: `frontend/src/hooks/useClipboard.ts`)
-- [ ] **Step 11: Floating Toast Notifications** (Target: `frontend/src/components/ui/Toast.tsx`)
-- [ ] **Step 12: Keyboard Navigation Hooks** (Target: `frontend/src/hooks/useKeyboardShortcut.ts`)
+- [x] **Step 11: Floating Toast Notifications** (Target: `frontend/src/components/ui/Toast.tsx`)
+- [x] **Step 12: Keyboard Navigation Hooks** (Target: `frontend/src/hooks/useKeyboardShortcut.ts`)
 
 ## Milestone 2: Static Pages & Distribution Hub
 - [x] **Step 13: Redesigned Cyberpunk Hero Core** (Target: `frontend/src/app/page.tsx`)
@@ -26,11 +26,11 @@
 - [x] **Step 15: Framework Ecosystem Selector Grid** (Target: `frontend/src/app/page.tsx`)
 - [x] **Step 16: Framework Matrix Hardware Customization Form** (Target: `frontend/src/app/page.tsx`)
 - [x] **Step 17: Mobile Optimization & Responsive Wrap-up** (Target: `frontend/src/app/page.tsx`)
-- [ ] **Step 18: PyPI Downloads & Release Matrix** (Target: `frontend/src/app/downloads/page.tsx`)
-- [ ] **Step 19: Docker Virtualization Template Hub** (Target: `frontend/src/app/downloads/docker/page.tsx`)
-- [ ] **Step 20: Devcontainer Virtualization Hub** (Target: `frontend/src/app/downloads/devcontainer/page.tsx`)
-- [ ] **Step 21: Conda Virtualization Hub** (Target: `frontend/src/app/downloads/conda/page.tsx`)
-- [ ] **Step 22: Telemetry Privacy Protection Statement** (Target: `frontend/src/app/privacy/page.tsx`)
+- [x] **Step 18: PyPI Downloads & Release Matrix** (Target: `frontend/src/app/downloads/page.tsx`)
+- [x] **Step 19: Docker Virtualization Template Hub** (Target: `frontend/src/app/downloads/docker/page.tsx`)
+- [x] **Step 20: Devcontainer Virtualization Hub** (Target: `frontend/src/app/downloads/devcontainer/page.tsx`)
+- [x] **Step 21: Conda Virtualization Hub** (Target: `frontend/src/app/downloads/conda/page.tsx`)
+- [x] **Step 22: Telemetry Privacy Protection Statement** (Target: `frontend/src/app/privacy/page.tsx`)
 - [ ] **Step 23: Terms of Service Page** (Target: `frontend/src/app/terms/page.tsx`)
 - [x] **Step 24: SEO Meta Tags Implementation** (Target: `frontend/src/app/layout.tsx`)
 

@@ -17,7 +17,7 @@
 - [x] **Step 8: Form Input Primitives** (Target: `frontend/src/components/ui/Input.tsx`)
 - [x] **Step 9: Global Tooltip Provider** (Target: `frontend/src/components/ui/Tooltip.tsx`)
 - [x] **Step 10: Global Code Block Copy Hook** (Target: `frontend/src/hooks/useClipboard.ts`)
-- [ ] **Step 11: Floating Toast Notifications** (Target: `frontend/src/components/ui/Toast.tsx`)
+- [x] **Step 11: Floating Toast Notifications** (Target: `frontend/src/components/ui/Toast.tsx`)
 - [ ] **Step 12: Keyboard Navigation Hooks** (Target: `frontend/src/hooks/useKeyboardShortcut.ts`)
 
 ## Milestone 2: Static Pages & Distribution Hub

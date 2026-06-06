@@ -2,6 +2,7 @@
 
 import io
 import zipfile
+from collections.abc import Iterator
 
 from fastapi import APIRouter, Depends, HTTPException, Path
 from fastapi.responses import StreamingResponse
@@ -36,7 +37,7 @@ router = APIRouter()
         422: {"description": "Request validation error"},
     },
 )
-def _stream_zip(buffer: io.BytesIO):
+def _stream_zip(buffer: io.BytesIO) -> Iterator[bytes]:
     """Stream ZIP contents and ensure buffer cleanup."""
     try:
         yield buffer.getvalue()
@@ -172,6 +173,6 @@ async def download_scripts(
         _stream_zip(zip_buffer),
         media_type="application/zip",
         headers={
-            "Content-Disposition": f"attachment; filename=envforge_{job_id[:8]}.zip"
+            "Content-Disposition": (f"attachment; filename=envforge_{job_id[:8]}.zip")
         },
     )

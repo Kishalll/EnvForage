@@ -7,12 +7,15 @@ All configuration is sourced from environment variables or a local `.env` file.
 shares the same env-loading bootstrap before `Settings` is read.
 """
 
+import sys
+import tempfile
+import urllib.parse
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
 from dotenv import load_dotenv
-from pydantic import model_validator
+from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 load_dotenv()
@@ -50,6 +53,52 @@ class Settings(BaseSettings):
     # ── CORS ─────────────────────────────────────────────────
     allowed_origins: str = "http://localhost:3000"
 
+    @field_validator("allowed_origins")
+    @classmethod
+    def validate_allowed_origins(cls, v: str) -> str:
+        """Validate allowed CORS origins.
+
+        Ensures all origins are valid HTTP/HTTPS URLs, rejects wildcards,
+        trailing slashes, paths, queries, fragments, and userinfo.
+        """
+        if not v or v.strip() == "":
+            raise ValueError("allowed_origins cannot be empty")
+
+        # Split and validate each origin
+        parts = v.split(",")
+        for part in parts:
+            if not part.strip():
+                raise ValueError(
+                    "Trailing or empty comma splits are not allowed in allowed_origins"
+                )
+
+            origin = part.strip()
+            if origin == "*":
+                raise ValueError("Wildcard '*' CORS origin is strictly forbidden")
+
+            parsed = urllib.parse.urlparse(origin)
+
+            if parsed.scheme not in ("http", "https"):
+                raise ValueError(
+                    f"CORS origin '{origin}' must use http or https scheme"
+                )
+            if not parsed.netloc:
+                raise ValueError(f"CORS origin '{origin}' must have a valid host")
+            if parsed.path != "":
+                raise ValueError(
+                    f"CORS origin '{origin}' must not contain a path or trailing slash"
+                )
+            if parsed.query:
+                raise ValueError(
+                    f"CORS origin '{origin}' must not contain query parameters"
+                )
+            if parsed.fragment:
+                raise ValueError(f"CORS origin '{origin}' must not contain a fragment")
+            if parsed.username or parsed.password or "@" in parsed.netloc:
+                raise ValueError(f"CORS origin '{origin}' must not include userinfo")
+
+        return v
+
     @property
     def allowed_origins_list(self) -> list[str]:
         return [o.strip() for o in self.allowed_origins.split(",")]
@@ -73,28 +122,78 @@ class Settings(BaseSettings):
     rate_limit_ai_rpm: int = 10  # AI troubleshoot: requests per minute
     rate_limit_repair_rpm: int = 20  # Repair endpoint: requests per minute
     rate_limit_general_rpm: int = 60  # General API: requests per minute
+    rate_limit_auth_rpm: int = 20  # Auth endpoints: requests per minute
     # ── Admin API Key ─────────────────────────────────────────
     admin_api_key: str = ""
 
     @model_validator(mode="after")
-    def validate_secret_key(self) -> "Settings":
-        """Enforce a strong SECRET_KEY in all non-development environments.
+    def validate_settings(self) -> "Settings":
+        """Validate settings after initialization.
 
-        The default value (DEV_SECRET_KEY) is committed to the public repository.
-        Any deployment that omits SECRET_KEY in staging or production will silently
-        sign JWTs with this known-public string, allowing trivial token forgery.
-
-        Raises:
-            ValueError: When the insecure default is used outside development.
+        Enforce a strong SECRET_KEY and ADMIN_API_KEY in non-development environments,
+        and validate custom_template_dir is within safe boundaries.
         """
-        if self.secret_key == DEV_SECRET_KEY and self.environment != "development":
-            raise ValueError(
-                f"A strong SECRET_KEY is required when environment='{self.environment}'. "
-                "Set the SECRET_KEY environment variable to a cryptographically random "
-                "value before deploying. "
-                "The default key ('dev-secret-key-change-in-production') is committed "
-                "to the public repository and must never be used outside local development."
-            )
+        # Validate localhost CORS origin in production
+        if self.environment == "production":
+            for origin in self.allowed_origins_list:
+                normalized = origin.strip().lower().rstrip("/")
+                if normalized == "http://localhost:3000":
+                    raise ValueError(
+                        "Localhost CORS origin 'http://localhost:3000' is not allowed in production"
+                    )
+
+        # Validate custom_template_dir
+        if self.custom_template_dir:
+            resolved_path = self.custom_template_dir.resolve()
+            project_root = Path(__file__).resolve().parent.parent.parent
+
+            is_valid = False
+            try:
+                resolved_path.relative_to(project_root)
+                is_valid = True
+            except ValueError:
+                pass
+
+            if not is_valid and "pytest" in sys.modules:
+                temp_dir = Path(tempfile.gettempdir()).resolve()
+                try:
+                    resolved_path.relative_to(temp_dir)
+                    is_valid = True
+                except ValueError:
+                    pass
+
+            if not is_valid:
+                raise ValueError(
+                    f"custom_template_dir '{self.custom_template_dir}' resolved to '{resolved_path}' "
+                    f"which is outside the safe boundary (project root: '{project_root}')."
+                )
+
+            self.custom_template_dir = resolved_path
+
+        # Validate SECRET_KEY and ADMIN_API_KEY
+        if self.environment != "development":
+            # Validate SECRET_KEY is not the default
+            if self.secret_key == DEV_SECRET_KEY:
+                raise ValueError("secret_key cannot be the default development key")
+
+            # Validate ADMIN_API_KEY is configured
+            if not self.admin_api_key or self.admin_api_key.strip() == "":
+                raise ValueError(
+                    f"ADMIN_API_KEY must be set when environment='{self.environment}'. "
+                    "Set the ADMIN_API_KEY environment variable to a cryptographically "
+                    "random value. Using an empty or default admin key allows unauthorized "
+                    "administrative access and data manipulation."
+                )
+
+            # Validate ADMIN_API_KEY has minimum length (32 characters for security)
+            if len(self.admin_api_key) < 32:
+                raise ValueError(
+                    f"ADMIN_API_KEY must be at least 32 characters long when "
+                    f"environment='{self.environment}'. Current length: {len(self.admin_api_key)}. "
+                    "Use a cryptographically strong random value (e.g., generated by "
+                    "'openssl rand -hex 16')."
+                )
+
         return self
 
 

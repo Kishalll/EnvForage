@@ -140,7 +140,7 @@
 - [x] **Step 113: Check for Updates Logic** (Target: `cli/envforge_agent/utils.py`)
 - [x] **Step 114: Self-Update Notification Prompt** (Target: `cli/envforge_agent/cli.py`)
 - [x] **Step 115: Rich Console Formatting** (Target: `cli/envforge_agent/cli.py`)
-- [ ] **Step 116: Interactive Troubleshooting Mode UI** (Target: `cli/envforge_agent/troubleshoot.py`)
+- [x] **Step 116: Interactive Troubleshooting Mode UI** (Target: `cli/envforge_agent/troubleshoot.py`)
 - [x] **Step 117: Environment Audit Command** (Target: `cli/envforge_agent/audit/command.py`)
 - [x] **Step 118: Audit Differ Logic** (Target: `cli/envforge_agent/audit/differ.py`)
 - [x] **Step 119: Rollback Setup Command** (Target: `cli/envforge_agent/cli.py`)

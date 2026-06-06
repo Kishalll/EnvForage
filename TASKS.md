@@ -158,7 +158,7 @@
 - [x] **Step 129: Plugin Activation API Endpoint** (Target: `backend/app/api/v1/plugins.py`)
 - [ ] **Step 130: Frontend Webhook Dashboard UI** (Target: `frontend/src/app/settings/webhooks/page.tsx`)
 - [ ] **Step 131: Webhook Delivery Logs View** (Target: `frontend/src/app/settings/webhooks/logs.tsx`)
-- [ ] **Step 132: Webhook Architecture Unit Tests** (Target: `backend/tests/integration/test_webhooks.py`)
+- [x] **Step 132: Webhook Architecture Unit Tests** (Target: `backend/tests/integration/test_webhooks.py`)
 
 ## Milestone 12: Security Hardening & Rate Limiting
 - [ ] **Step 133: Redis Connection Configuration** (Target: `backend/app/core/redis.py`)

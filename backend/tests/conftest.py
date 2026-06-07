@@ -79,7 +79,9 @@ def new_result_processor(self, dialect, coltype):
                 return None
             try:
                 return json.loads(value)
-            except Exception:
+            except Exception as e:
+                import logging
+                logging.error(f"Test fixture error: {e}")
                 return value
 
         return process

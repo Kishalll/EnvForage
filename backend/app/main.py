@@ -132,7 +132,9 @@ def create_app() -> FastAPI:
             async with asyncio.timeout(2):
                 async with AsyncSessionLocal() as session:
                     await session.execute(text("SELECT 1"))
-        except Exception:
+        except Exception as e:
+            import logging
+            logging.error(f"Main app error: {e}")
             db_status = "unavailable"
             overall = "degraded"
         try:

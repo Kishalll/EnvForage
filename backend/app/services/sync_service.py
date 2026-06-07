@@ -162,7 +162,9 @@ async def sync_pypi_releases(db: AsyncSession) -> None:
                                     .get("info", {})
                                     .get("requires_python")
                                 )
-                        except Exception:
+                        except Exception as e:
+                        import logging
+                        logging.error(f"Sync error 2: {e}")
                             pass
 
                     supported_py = parse_supported_python(requires_python)

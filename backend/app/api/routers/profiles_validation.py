@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field, ValidationError
-from typing import Optional, List
 
 router = APIRouter()
 
@@ -11,16 +11,16 @@ class ProfileQueryParams(BaseModel):
     """
     limit: int = Field(10, ge=1, le=100, description="Number of profiles to return")
     offset: int = Field(0, ge=0, description="Pagination offset")
-    sort_by: Optional[str] = Field(None, pattern="^(created_at|updated_at|name)$", description="Field to sort by")
-    tags: Optional[List[str]] = Field(None, max_items=10, description="List of tags to filter by")
+    sort_by: str | None = Field(None, pattern="^(created_at|updated_at|name)$", description="Field to sort by")
+    tags: list[str] | None = Field(None, max_items=10, description="List of tags to filter by")
     active_only: bool = Field(True, description="Filter only active profiles")
 
 @router.get("/profiles/validated")
 async def get_validated_profiles(
     limit: int = Query(10, ge=1, le=100),
     offset: int = Query(0, ge=0),
-    sort_by: Optional[str] = Query(None, regex="^(created_at|updated_at|name)$"),
-    tags: Optional[List[str]] = Query(None, max_items=10),
+    sort_by: str | None = Query(None, regex="^(created_at|updated_at|name)$"),
+    tags: list[str] | None = Query(None, max_items=10),
     active_only: bool = Query(True)
 ):
     """

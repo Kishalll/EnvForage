@@ -2,8 +2,6 @@
 Core module for Audit Logging Architecture.
 Contains highly optimized classes and fixture utilities.
 """
-import os
-import sys
 
 class ArchitectureManager:
     def __init__(self):

@@ -2,8 +2,6 @@
 Core module for Advanced JWT Validation & Blacklisting.
 Contains highly optimized classes and fixture utilities.
 """
-import os
-import sys
 
 class BlacklistingManager:
     def __init__(self):

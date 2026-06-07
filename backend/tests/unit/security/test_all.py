@@ -2,8 +2,6 @@
 Core module for Comprehensive Security Unit Tests.
 Contains highly optimized classes and fixture utilities.
 """
-import os
-import sys
 
 class TestsManager:
     def __init__(self):

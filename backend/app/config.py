@@ -74,6 +74,7 @@ class Settings(BaseSettings):
 
             origin = part.strip()
             if origin == "*":
+             # Wildcard validation will be done in model_validator based on environment
                 continue
 
             parsed = urllib.parse.urlparse(origin)
@@ -133,6 +134,10 @@ class Settings(BaseSettings):
         Enforce a strong SECRET_KEY and ADMIN_API_KEY in non-development environments,
         and validate custom_template_dir is within safe boundaries.
         """
+                # Block wildcard CORS origin in production
+        if self.environment == "production" and self.allowed_origins == "*":
+            raise ValueError("Wildcard '*' CORS origin is strictly forbidden in production")
+
         # Validate localhost CORS origin in production
         if self.environment == "production":
             for origin in self.allowed_origins_list:

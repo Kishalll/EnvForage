@@ -12,7 +12,7 @@ class ProfileQueryParams(BaseModel):
     limit: int = Field(10, ge=1, le=100, description="Number of profiles to return")
     offset: int = Field(0, ge=0, description="Pagination offset")
     sort_by: str | None = Field(None, pattern="^(created_at|updated_at|name)$", description="Field to sort by")
-    tags: list[str] | None = Field(None, max_items=10, description="List of tags to filter by")
+    tags: list[str] | None = Field(None, description="List of tags to filter by")
     active_only: bool = Field(True, description="Filter only active profiles")
 
 @router.get("/profiles/validated")

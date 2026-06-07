@@ -57,7 +57,9 @@ async def get_compatibility_summary(db: DB) -> dict[str, Any]:
     try:
         cuda_res = await db.execute(select(CUDAMatrixDBModel))
         cuda_entries = cuda_res.scalars().all()
-    except Exception:
+    except Exception as e:
+        import logging
+        logging.error(f"CUDA summary DB fetch: {e}")
         pass
 
     if cuda_entries:

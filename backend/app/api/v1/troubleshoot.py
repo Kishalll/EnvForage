@@ -55,7 +55,9 @@ async def troubleshoot(
                 yield (
                     f'data: {{"error":"PROVIDER_ERROR","message":"{exc.reason}"}}\n\n'
                 )
-            except Exception:
+            except Exception as e:
+            import logging
+            logging.error(f"Troubleshoot API error: {e}")
                 logger.exception("Error in troubleshoot stream generator")
                 yield (
                     'data: {"error":"STREAM_ERROR",'

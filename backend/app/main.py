@@ -47,7 +47,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info(
         "EnvForge API starting",
         version=settings.app_version,
-        environment=settings.environment
+        environment=settings.environment,
     )
     # ── Background cleanup scheduler ─────────────────────────
     scheduler = AsyncIOScheduler()
@@ -100,7 +100,7 @@ def create_app() -> FastAPI:
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=settings.allowed_origins_list,
         allow_credentials=False,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -132,7 +132,9 @@ def create_app() -> FastAPI:
             async with asyncio.timeout(2):
                 async with AsyncSessionLocal() as session:
                     await session.execute(text("SELECT 1"))
-        except Exception:
+        except Exception as e:
+            import logging
+            logging.error(f"Main app error: {e}")
             db_status = "unavailable"
             overall = "degraded"
         try:

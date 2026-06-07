@@ -90,7 +90,9 @@ def parse_supported_python(requires_python: str | None) -> list[str]:
         spec = SpecifierSet(requires_python)
         supported = [v for v in all_py_versions if Version(v) in spec]
         return supported
-    except Exception:
+    except Exception as e:
+            import logging
+            logging.error(f"Sync service error: {e}")
         return []
 
 

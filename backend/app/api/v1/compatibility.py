@@ -74,7 +74,9 @@ async def get_compatibility_summary(db: DB) -> dict[str, Any]:
     try:
         rocm_res = await db.execute(select(RocmMatrixDBModel))
         rocm_entries = rocm_res.scalars().all()
-    except Exception:
+    except Exception as e:
+        import logging
+        logging.error(f"ROCm summary DB fetch: {e}")
         pass
 
     if rocm_entries:

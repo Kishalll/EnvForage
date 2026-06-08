@@ -297,3 +297,55 @@ class ProfileQueryBuilder:
     def build(self):
         return self.query
 
+
+# --- Cursor-Based Pagination Engine ---
+from typing import Generic, TypeVar, List, Optional
+from pydantic import BaseModel
+from sqlalchemy.sql import Select
+import base64
+
+T = TypeVar("T")
+
+class CursorPagination(BaseModel, Generic[T]):
+    items: List[T]
+    next_cursor: Optional[str] = None
+    has_more: bool = False
+
+class PaginationEngine:
+    @staticmethod
+    def encode_cursor(value: str) -> str:
+        return base64.urlsafe_b64encode(value.encode('utf-8')).decode('utf-8')
+
+    @staticmethod
+    def decode_cursor(cursor: str) -> str:
+        try:
+            return base64.urlsafe_b64decode(cursor.encode('utf-8')).decode('utf-8')
+        except Exception:
+            raise ValueError("Invalid cursor format")
+
+    @staticmethod
+    def apply_cursor(stmt: Select, sort_column, cursor_value: str | None, sort_desc: bool = True):
+        """Applies cursor WHERE clause safely to SQLAlchemy statements."""
+        if cursor_value:
+            decoded = PaginationEngine.decode_cursor(cursor_value)
+            if sort_desc:
+                return stmt.where(sort_column < decoded)
+            else:
+                return stmt.where(sort_column > decoded)
+        return stmt
+
+    @staticmethod
+    def build_response(items: List[Any], limit: int, cursor_attr: str) -> CursorPagination:
+        has_more = len(items) > limit
+        if has_more:
+            items = items[:limit]
+            last_item = items[-1]
+            next_cursor = PaginationEngine.encode_cursor(str(getattr(last_item, cursor_attr)))
+        else:
+            next_cursor = None
+            
+        return CursorPagination(
+            items=items,
+            next_cursor=next_cursor,
+            has_more=has_more
+        )

@@ -27,6 +27,7 @@ from app.api.v1 import (
     verify,
 )
 from app.api.v1.admin.matrix import router as admin_matrix_router
+from app.api.routers import feature_issue_803, feature_issue_804
 from app.cache import get_redis_client
 from app.config import get_settings
 from app.core.handlers import register_exception_handlers
@@ -37,14 +38,16 @@ from app.middleware.payload_size import PayloadSizeLimitMiddleware
 from app.services.cleanup_service import run_cleanup
 from app.services.sync_service import matrix_sync_loop
 
+logger = structlog.get_logger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Manage application startup and shutdown."""
     settings = get_settings()
-    logger = structlog.get_logger(__name__)
+    logger_instance = structlog.get_logger(__name__)
 
-    logger.info(
+    logger_instance.info(
         "EnvForge API starting",
         version=settings.app_version,
         environment=settings.environment,
@@ -60,7 +63,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         misfire_grace_time=3600,
     )
     scheduler.start()
-    logger.info("Cleanup scheduler started (runs every 24h)")
+    logger_instance.info("Cleanup scheduler started (runs every 24h)")
 
     sync_task = None
     if "pytest" not in sys.modules and settings.run_sync_loop:
@@ -76,7 +79,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
             pass
 
     scheduler.shutdown(wait=False)
-    logger.info("EnvForge API shutting down")
+    logger_instance.info("EnvForge API shutting down")
 
 
 def create_app() -> FastAPI:
@@ -121,6 +124,8 @@ def create_app() -> FastAPI:
     app.include_router(authentication.router, prefix="/api/v1", tags=["auth"])
     app.include_router(recommend.router, prefix="/api/v1", tags=["recommendations"])
     app.include_router(admin_matrix_router, prefix="/api/v1", tags=["admin-matrix"])
+    app.include_router(feature_issue_803.router, prefix="/api/v1", tags=["media"])
+    app.include_router(feature_issue_804.router, prefix="/api/v1", tags=["locations"])
 
     # ── Health check ──────────────────────────────────────────
     @app.get("/health", include_in_schema=False)
@@ -133,8 +138,7 @@ def create_app() -> FastAPI:
                 async with AsyncSessionLocal() as session:
                     await session.execute(text("SELECT 1"))
         except Exception as e:
-            import logging
-            logging.error(f"Main app error: {e}")
+            logger.error(f"Main app error: {e}")
             db_status = "unavailable"
             overall = "degraded"
         try:
@@ -150,8 +154,8 @@ def create_app() -> FastAPI:
             redis_status = "unavailable"
             overall = "degraded"
         except Exception as e:
-        import logging
-        logging.error(f"Main shutdown error: {e}")
+            import logging
+            logging.error(f"Main shutdown error: {e}")
             redis_status = "unavailable"
             overall = "degraded"
         return JSONResponse(

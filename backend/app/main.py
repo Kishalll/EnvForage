@@ -38,14 +38,16 @@ from app.middleware.payload_size import PayloadSizeLimitMiddleware
 from app.services.cleanup_service import run_cleanup
 from app.services.sync_service import matrix_sync_loop
 
+logger = structlog.get_logger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Manage application startup and shutdown."""
     settings = get_settings()
-    logger = structlog.get_logger(__name__)
+    logger_instance = structlog.get_logger(__name__)
 
-    logger.info(
+    logger_instance.info(
         "EnvForge API starting",
         version=settings.app_version,
         environment=settings.environment,
@@ -61,7 +63,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         misfire_grace_time=3600,
     )
     scheduler.start()
-    logger.info("Cleanup scheduler started (runs every 24h)")
+    logger_instance.info("Cleanup scheduler started (runs every 24h)")
 
     sync_task = None
     if "pytest" not in sys.modules and settings.run_sync_loop:
@@ -77,7 +79,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
             pass
 
     scheduler.shutdown(wait=False)
-    logger.info("EnvForge API shutting down")
+    logger_instance.info("EnvForge API shutting down")
 
 
 def create_app() -> FastAPI:
@@ -136,8 +138,7 @@ def create_app() -> FastAPI:
                 async with AsyncSessionLocal() as session:
                     await session.execute(text("SELECT 1"))
         except Exception as e:
-            import logging
-            logging.error(f"Main app error: {e}")
+            logger.error(f"Main app error: {e}")
             db_status = "unavailable"
             overall = "degraded"
         try:

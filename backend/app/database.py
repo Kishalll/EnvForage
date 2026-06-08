@@ -5,7 +5,8 @@ Uses SQLAlchemy 2.0 async API throughout.
 
 from collections.abc import AsyncGenerator
 
-from fastapi import logger
+import logging
+logger = logging.getLogger(__name__)
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,

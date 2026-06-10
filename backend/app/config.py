@@ -144,17 +144,12 @@ class Settings(BaseSettings):
                     )
 
             # Block localhost database URLs in production
-            try:
-                parsed_db = urllib.parse.urlparse(self.database_url)
-                hostname = parsed_db.hostname
-                if hostname in ("localhost", "127.0.0.1", "[::1]", "::1"):
-                    raise ValueError(
-                        "Localhost database URL is not allowed in production environment"
-                    )
-            except Exception as e:
-                if isinstance(e, ValueError):
-                    raise
-                pass
+            parsed_db = urllib.parse.urlparse(self.database_url)
+            hostname = parsed_db.hostname
+            if hostname in ("localhost", "127.0.0.1", "[::1]", "::1"):
+                raise ValueError(
+                    "Localhost database URL is not allowed in production environment"
+                )
 
         # Validate custom_template_dir
         if self.custom_template_dir:

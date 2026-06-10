@@ -115,7 +115,7 @@ class TemplateRenderer:
     All output is safety-validated before returning.
     """
 
-    def render(
+    async def render(
         self,
         output_filename: str,
         context: TemplateContext,
@@ -146,14 +146,19 @@ class TemplateRenderer:
         env = _get_jinja_env(settings.custom_template_dir)
         template = env.get_template(template_path)
         rendered = template.render(**context.to_dict())
-        safe_content = validate_rendered_output(rendered, template_name=template_path)
+        safe_content = await validate_rendered_output(
+            rendered, template_name=template_path
+        )
 
         return RenderResult(filename=output_filename, content=safe_content)
 
-    def render_all(
+    async def render_all(
         self,
         output_filenames: Sequence[str],
         context: TemplateContext,
     ) -> list[RenderResult]:
         """Render multiple output formats from the same context."""
-        return [self.render(name, context) for name in output_filenames]
+        results = []
+        for name in output_filenames:
+            results.append(await self.render(name, context))
+        return results

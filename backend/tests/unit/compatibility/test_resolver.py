@@ -438,3 +438,59 @@ async def test_no_matching_semver_range():
             os_support=["LINUX", "WSL"],
             cuda_required=True,
         )
+
+
+# ── Regression: torch 2.3.1 silent validation bypass ─────────────────────────
+# torch 2.3.1 was previously missing from the Python compatibility matrix.
+# Without this entry, _get_framework_entry() returned None and the resolver
+# silently skipped all Python/CUDA guards — allowing invalid combinations
+# to produce scripts without any error.
+# See: https://pytorch.org/get-started/previous-versions/ (torch 2.3.1)
+
+
+@pytest.mark.asyncio
+async def test_torch_231_rejects_unsupported_python():
+    """torch 2.3.1 only supports Python 3.8–3.11; 3.12 must be rejected."""
+    with pytest.raises(IncompatibilityError) as exc:
+        await R.resolve(
+            packages=[PackageConstraint("torch", "2.3.1")],
+            python_version="3.12",
+            cuda_version="12.1",
+            target_os="LINUX",
+            profile_slug="pytorch-cuda",
+            os_support=["LINUX", "WSL"],
+            cuda_required=True,
+        )
+    assert exc.value.component == "python"
+
+
+@pytest.mark.asyncio
+async def test_torch_231_rejects_unsupported_cuda():
+    """torch 2.3.1 only supports CUDA 11.8 and 12.1; 12.4 must be rejected."""
+    with pytest.raises(IncompatibilityError) as exc:
+        await R.resolve(
+            packages=[PackageConstraint("torch", "2.3.1")],
+            python_version="3.11",
+            cuda_version="12.4",
+            target_os="LINUX",
+            profile_slug="pytorch-cuda",
+            os_support=["LINUX", "WSL"],
+            cuda_required=True,
+        )
+    assert exc.value.component == "cuda"
+
+
+@pytest.mark.asyncio
+async def test_torch_231_valid_combination_succeeds():
+    """torch 2.3.1 + Python 3.11 + CUDA 12.1 is a valid combination."""
+    result = await R.resolve(
+        packages=[PackageConstraint("torch", "2.3.1")],
+        python_version="3.11",
+        cuda_version="12.1",
+        target_os="LINUX",
+        profile_slug="pytorch-cuda",
+        os_support=["LINUX", "WSL"],
+        cuda_required=True,
+    )
+    assert result.packages[0].version == "2.3.1"
+    assert result.packages[0].cuda_variant == "cu121"

@@ -93,6 +93,16 @@ _HARDCODED_MATRIX: dict[str, list[FrameworkVersionEntry]] = {
             supported_python=["3.8", "3.9", "3.10", "3.11"],
             supported_cuda=["11.8", "12.1"],
         ),
+        # torch 2.3.1 — patch release of 2.3.0, same Python/CUDA support.
+        # Source: https://pytorch.org/get-started/previous-versions/
+        FrameworkVersionEntry(
+            framework="torch",
+            version="2.3.1",
+            min_python="3.8",
+            max_python="3.11",
+            supported_python=["3.8", "3.9", "3.10", "3.11"],
+            supported_cuda=["11.8", "12.1"],
+        ),
         FrameworkVersionEntry(
             framework="torch",
             version="2.4.0",

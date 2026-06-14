@@ -56,8 +56,25 @@ def check_macos_support():
 # ── Root command group ─────────────────────────────────────────────────────────
 
 
+def _version_callback(ctx: click.Context, _param: click.Parameter, value: bool) -> None:
+    if not value or ctx.resilient_parsing:
+        return
+    python_ver = sys.version.split()[0]
+    os_info = f"{platform.system()} {platform.release()} {platform.machine()}"
+    click.echo(f"envforge-agent {__version__}")
+    click.echo(f"Python {python_ver} · {os_info}")
+    ctx.exit()
+
+
 @click.group()
-@click.version_option(__version__, prog_name="envforge-agent")
+@click.option(
+    "--version",
+    is_flag=True,
+    is_eager=True,
+    expose_value=False,
+    callback=_version_callback,
+    help="Show the version and exit.",
+)
 @click.option(
     "--no-color",
     is_flag=True,

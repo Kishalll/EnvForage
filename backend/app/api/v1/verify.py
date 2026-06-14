@@ -1,5 +1,9 @@
 """Verify endpoint — POST /api/v1/verify."""
-
+from math import ceil
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from sqlalchemy import select, func
+from sqlalchemy.ext.asyncio import AsyncSession
+import uuid
 import re
 import uuid
 from datetime import UTC, datetime

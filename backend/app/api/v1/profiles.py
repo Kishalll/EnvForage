@@ -186,6 +186,7 @@ async def delete_profile(
         description="Unique slug of the environment profile to delete.",
         examples=["pytorch-cu121"],
     ),
+    _rate_limit: None = Depends(general_rate_limit),
     _auth: None = Depends(require_admin),
 ) -> None:
     """

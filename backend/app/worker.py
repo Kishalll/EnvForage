@@ -35,6 +35,26 @@ celery_app.conf.update(
     enable_utc=True,
 )
 
+import logging as _logging
+
+_worker_logger = _logging.getLogger("celery.worker.pool")
+
+
+@celery_app.on_after_configure.connect
+def _warn_on_incompatible_pool(sender, **kwargs):  # type: ignore[no-untyped-def]
+    """Log a warning if the worker uses a pool incompatible with asyncio.run()."""
+    try:
+        pool_cls = sender.conf.get("worker_pool", "prefork")
+        if isinstance(pool_cls, str) and pool_cls in ("gevent", "eventlet"):
+            _worker_logger.warning(
+                "EnvForage tasks use asyncio.run() internally. "
+                "Running with --pool=%s will cause RuntimeError. "
+                "Use --pool=prefork (the default).",
+                pool_cls,
+            )
+    except Exception:
+        pass
+
 
 @celery_app.task(name="run_diagnose_task")  # type: ignore[untyped-decorator]
 def run_diagnose_task(

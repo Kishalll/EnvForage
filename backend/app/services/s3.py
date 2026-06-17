@@ -92,3 +92,18 @@ class S3StorageService:
         except ClientError as e:
             logger.error(f"Failed to generate S3 presigned POST: {e}")
             return None
+
+
+def get_s3_service() -> S3StorageService | None:
+    """Create an S3StorageService from app settings, or None if unconfigured."""
+    from app.config import get_settings
+    settings = get_settings()
+    if not settings.s3_bucket_name:
+        logger.info("S3 not configured — uploads will stay local.")
+        return None
+    return S3StorageService(
+        region_name=settings.aws_region,
+        aws_access_key_id=settings.aws_access_key_id,
+        aws_secret_access_key=settings.aws_secret_access_key,
+        bucket_name=settings.s3_bucket_name,
+    )

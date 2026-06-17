@@ -228,13 +228,25 @@ async def get_profile_by_id(
 
 
 async def _invalidate_profile_caches(slug: str | None = None) -> None:
+    """Invalidate profile caches using pipeline for atomic batch deletion."""
     redis = await get_redis_client()
     if not redis:
         return
+
+    keys_to_delete: list[str] = []
     if slug:
-        await redis.delete(f"profiles:slug:{slug}")
-    async for key in redis.scan_iter("profiles:list:*"):
-        await redis.delete(key)
+        keys_to_delete.append(f"profiles:slug:{slug}")
+
+    # Collect list-cache keys (scan is cursor-based and won't block Redis)
+    async for key in redis.scan_iter(match="profiles:list:*", count=100):
+        keys_to_delete.append(key)
+
+    if keys_to_delete:
+        # Pipeline sends all DELETEs in a single round-trip
+        async with redis.pipeline(transaction=False) as pipe:
+            for key in keys_to_delete:
+                pipe.delete(key)
+            await pipe.execute()
 
 
 async def create_profile(

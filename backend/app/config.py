@@ -136,6 +136,16 @@ class Settings(BaseSettings):
     def allowed_origins_list(self) -> list[str]:
         return [o.strip() for o in self.allowed_origins.split(",")]
 
+    # ── S3 / Blob Storage ─────────────────────────────────────
+    # Leave blank to disable S3 integration (uploads stay local).
+    aws_access_key_id: str = ""
+    aws_secret_access_key: str = ""
+    aws_region: str = "us-east-1"
+    s3_bucket_name: str = ""
+
+    # ── Uploads ───────────────────────────────────────────────
+    upload_dir: str = "/tmp/envforage_uploads"
+
     # ── AI / LLM ─────────────────────────────────────────────
     envforage_llm_provider: Literal["openai", "openrouter", "ollama", "mock"] = "mock"
     openai_api_key: str = ""

@@ -366,35 +366,50 @@ def _print_recommendations(report: DiagnosticReport) -> None:
 
 
 async def _send_report(report: DiagnosticReport, api_url: str, quiet: bool) -> None:
-    """POST the DiagnosticReport to the EnvForge API."""
+    """POST the DiagnosticReport to the EnvForge API with retry logic."""
     url = f"{api_url.rstrip('/')}/api/v1/diagnose"
     if not quiet:
         console.print(f"\n[bold]Sending report to[/] {url} ...")
 
-    try:
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                url,
-                content=report.to_json(),
-                headers={"Content-Type": "application/json"},
-                timeout=30,
-            )
-        response.raise_for_status()
-        result = response.json()
+    max_attempts = 3
+    delays = [2, 4]  # seconds between retries
 
-        if not quiet:
-            _print_diagnose_response(result)
-        else:
-            click.echo(json.dumps(result, indent=2))
+    for attempt in range(1, max_attempts + 1):
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    url,
+                    content=report.to_json(),
+                    headers={"Content-Type": "application/json"},
+                    timeout=30,
+                )
+            response.raise_for_status()
+            result = response.json()
 
-    except httpx.ConnectError:
-        err_console.print(f"[ERROR] Cannot connect to {url}")
-        err_console.print("  Hint: Is the EnvForge API running? Check ENVFORGE_API_URL.")
-        sys.exit(1)
-    except httpx.HTTPStatusError as e:
-        err_console.print(f"[ERROR] API returned {e.response.status_code}")
-        err_console.print(e.response.text)
-        sys.exit(1)
+            if not quiet:
+                _print_diagnose_response(result)
+            else:
+                click.echo(json.dumps(result, indent=2))
+            return
+
+        except (httpx.ConnectError, httpx.TimeoutException) as e:
+            if attempt < max_attempts:
+                delay = delays[attempt - 1]
+                if not quiet:
+                    console.print(
+                        f"  [yellow][Attempt {attempt}/{max_attempts}] "
+                        f"Connection failed, retrying in {delay}s...[/]"
+                    )
+                await asyncio.sleep(delay)
+            else:
+                err_console.print(f"[ERROR] Cannot connect to {url}")
+                err_console.print("  Hint: Is the EnvForge API running? Check ENVFORGE_API_URL.")
+                sys.exit(1)
+
+        except httpx.HTTPStatusError as e:
+            err_console.print(f"[ERROR] API returned {e.response.status_code}")
+            err_console.print(e.response.text)
+            sys.exit(1)
 
 
 def _print_diagnose_response(result: dict) -> None:

@@ -1,5 +1,5 @@
 """
-EnvForge application settings.
+EnvForage application settings.
 
 All configuration is sourced from environment variables or a local `.env` file.
 `load_dotenv()` is invoked here so any code path that imports `app.config`
@@ -58,7 +58,7 @@ class Settings(BaseSettings):
         return v
 
     # ── Database ──────────────────────────────────────────────
-    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/envforge"
+    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/envforage"
     database_command_timeout_seconds: float = 30.0
 
     @field_validator("database_command_timeout_seconds")
@@ -137,7 +137,7 @@ class Settings(BaseSettings):
         return [o.strip() for o in self.allowed_origins.split(",")]
 
     # ── AI / LLM ─────────────────────────────────────────────
-    envforge_llm_provider: Literal["openai", "openrouter", "ollama", "mock"] = "mock"
+    envforage_llm_provider: Literal["openai", "openrouter", "ollama", "mock"] = "mock"
     openai_api_key: str = ""
     openai_model: str = "gpt-4o"
     openrouter_api_key: str = ""

@@ -1,6 +1,6 @@
 
 """
-Integration tests for the `envforge rollback` CLI command.
+Integration tests for the `envforage rollback` CLI command.
 """
 
 from __future__ import annotations
@@ -10,7 +10,7 @@ import shutil
 from unittest.mock import patch
 from click.testing import CliRunner
 
-from envforge_agent.cli import cli
+from envforage.cli import cli
 
 
 class TestRollbackNoBackups:

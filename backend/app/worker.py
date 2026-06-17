@@ -15,7 +15,7 @@ from app.schemas.diagnostic import CompatibilityIssue, DiagnoseResponse
 settings = get_settings()
 
 celery_app = Celery(
-    "envforge_worker",
+    "envforage_worker",
     broker=settings.redis_url or "redis://localhost:6379/0",
     backend=settings.redis_url or "redis://localhost:6379/0",
 )

@@ -1,4 +1,4 @@
-# EnvForge — API Design
+# EnvForage — API Design
 
 > **Version**: 1.0.0
 > **Status**: Production
@@ -19,7 +19,7 @@
 ## Base URL
 
 ```
-Production : https://api.envforge.dev/api/v1
+Production : https://api.envforage.dev/api/v1
 Development: http://localhost:8000/api/v1
 ```
 
@@ -102,7 +102,7 @@ Generate a set of setup scripts for a profile.
   "status": "completed",
   "download_url": "/scripts/gen_abc123/download",
   "preview": {
-    "setup.sh": "#!/bin/bash\n# EnvForge Generated Script\n..."
+    "setup.sh": "#!/bin/bash\n# EnvForage Generated Script\n..."
   }
 }
 ```
@@ -216,7 +216,7 @@ Generate a repair script based on AI analysis.
 **Response**:
 ```json
 {
-  "repair_script": "#!/bin/bash\n# EnvForge Repair Script\n...",
+  "repair_script": "#!/bin/bash\n# EnvForage Repair Script\n...",
   "warnings": ["This script will reinstall the NVIDIA driver. Close all GPU processes first."]
 }
 ```

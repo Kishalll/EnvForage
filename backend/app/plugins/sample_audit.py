@@ -1,9 +1,9 @@
 from typing import Any
 
-from app.plugins.base import EnvForgePlugin
+from app.plugins.base import EnvForagePlugin
 
 
-class SampleAuditPlugin(EnvForgePlugin):
+class SampleAuditPlugin(EnvForagePlugin):
     @property
     def name(self) -> str:
         return "sample-audit-plugin"

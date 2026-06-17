@@ -160,7 +160,7 @@ async def download_scripts(
             zf.writestr(script.filename, script.content)
         # Include a manifest
         manifest = (
-            f"EnvForge Generated Scripts\n"
+            f"EnvForage Generated Scripts\n"
             f"Job: {job.id}\n"
             f"Profile: {job.profile_id}\n"
             f"OS: {job.target_os}\n"
@@ -173,6 +173,6 @@ async def download_scripts(
         _stream_zip(zip_buffer),
         media_type="application/zip",
         headers={
-            "Content-Disposition": (f"attachment; filename=envforge_{job_id[:8]}.zip")
+            "Content-Disposition": (f"attachment; filename=envforage_{job_id[:8]}.zip")
         },
     )

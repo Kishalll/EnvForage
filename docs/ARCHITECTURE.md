@@ -1,4 +1,4 @@
-# EnvForge — System Architecture
+# EnvForage — System Architecture
 
 > **Version**: 1.0.0
 > **Status**: Phase 1 & 3 Implemented
@@ -30,12 +30,12 @@ This document expands upon the core architectural concepts introduced during the
 
 ## 3. CLI Offline Caching & Synchronization
 **The Problem:** Developers often work in air-gapped environments or on servers lacking outbound internet access.
-**The Solution:** The CLI Agent (`envforge_agent`) initializes a local SQLite database at `~/.envforge/cache.db`.
+**The Solution:** The CLI Agent (`envforage`) initializes a local SQLite database at `~/.envforage/cache.db`.
 - **Offline Flag:** When run with `--offline`, the HTTP POST to the backend is bypassed entirely.
 - Telemetry data is timestamped, hashed, and stored locally.
-- Users can run `envforge restore` to read the cached database and execute automated rollback scripts to undo a previously generated setup.
+- Users can run `envforage restore` to read the cached database and execute automated rollback scripts to undo a previously generated setup.
 
-EnvForge is a production-grade ML/AI environment provisioning platform. It provides:
+EnvForage is a production-grade ML/AI environment provisioning platform. It provides:
 - Intelligent setup script generation for Windows, WSL, Linux, and CUDA environments
 - Compatibility-aware ML framework installation guidance
 - Local diagnostic agents for environment introspection
@@ -166,7 +166,7 @@ graph TD
 - Full integration: Phase 4
 
 ### 3.6 CLI Diagnostic Agent
-- Standalone Python package (`pip install envforge-agent`)
+- Standalone Python package (`pip install envforage`)
 - Collects system info: OS, GPU, VRAM, CUDA, Python, drivers
 - Outputs structured JSON — can pipe to API or view locally
 - No network requirement; works fully offline
@@ -176,7 +176,7 @@ graph TD
 ```mermaid
 flowchart TD
 
-    A[envforge diagnose] --> B[Generate DiagnosticReport]
+    A[envforage diagnose] --> B[Generate DiagnosticReport]
     B --> C[Send Report to Backend API]
     C --> D[Compatibility Analysis]
     D --> E[AI Troubleshooting Layer]
@@ -233,7 +233,7 @@ FastAPI → PostgreSQL (Supabase IPv4 Pooler)
 FastAPI → Redis (session cache, rate limiting — Phase 2)
 FastAPI → OpenRouter / LLM Provider (Phase 4)
 
-FastAPI → Kubernetes via Helm chart (`helm/envforge/`)
+FastAPI → Kubernetes via Helm chart (`helm/envforage/`)
          └── Deployment + Service + Ingress + ConfigMap + Redis
 ```
 
@@ -300,10 +300,10 @@ This document expands upon the core architectural concepts introduced during the
 
 ## 3. CLI Offline Caching & Synchronization
 **The Problem:** Developers often work in air-gapped environments or on servers lacking outbound internet access.
-**The Solution:** The CLI Agent (`envforge_agent`) initializes a local SQLite database at `~/.envforge/cache.db`.
+**The Solution:** The CLI Agent (`envforage`) initializes a local SQLite database at `~/.envforage/cache.db`.
 - **Offline Flag:** When run with `--offline`, the HTTP POST to the backend is bypassed entirely.
 - Telemetry data is timestamped, hashed, and stored locally.
-- Users can run `envforge restore` to read the cached database and execute automated rollback scripts to undo a previously generated setup.
+- Users can run `envforage restore` to read the cached database and execute automated rollback scripts to undo a previously generated setup.
 
 ## 4. Asynchronous AI Streaming Responses
 **The Problem:** Waiting 15-20 seconds for an LLM to generate a complex dependency resolution script results in terrible UX.

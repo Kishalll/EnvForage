@@ -1,5 +1,5 @@
 """
-Integration tests for the `envforge fix` CLI command.
+Integration tests for the `envforage fix` CLI command.
 
 Tests mock the backend API using unittest.mock.patch("httpx.AsyncClient")
 to intercept the async HTTP requests sent by the CLI agent.
@@ -14,7 +14,7 @@ from unittest.mock import MagicMock, patch, AsyncMock
 import pytest
 from click.testing import CliRunner
 
-from envforge_agent.cli import cli
+from envforage.cli import cli
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 
@@ -57,7 +57,7 @@ def mock_httpx(mock_api_success):
 
 
 class TestFixHappyPath:
-    """Happy path tests for envforge fix."""
+    """Happy path tests for envforage fix."""
 
     def test_fix_displays_script_content(self, valid_report, mock_httpx):
         """Standard run should print script content in a rich panel."""
@@ -156,7 +156,7 @@ class TestFixHappyPath:
 
 
 class TestFixAPIErrors:
-    """Tests for API error handling in envforge fix."""
+    """Tests for API error handling in envforage fix."""
 
     def test_fix_exits_on_connect_error(self, valid_report):
         """ConnectError should print a helpful message and exit 1."""

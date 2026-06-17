@@ -160,7 +160,7 @@ class DiagnosticReportSchema(BaseModel):
 
     agent_version: str = Field(
         "1.0.0",
-        description="Version of the envforge-agent CLI.",
+        description="Version of the envforage CLI.",
         examples=["1.0.0"],
     )
     os: OSInfo

@@ -191,7 +191,7 @@ export default function DiagnosePage() {
 						>
 							Run{" "}
 							<code style={{ color: "var(--brand-accent)" }}>
-								envforge diagnose --quiet
+								envforage diagnose --quiet
 							</code>{" "}
 							and paste the output below.
 						</p>

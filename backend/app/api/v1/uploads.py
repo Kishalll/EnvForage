@@ -10,7 +10,7 @@ import logging
 router = APIRouter()
 logger = logging.getLogger("UploadPipeline")
 
-UPLOAD_DIR = "/tmp/envforge_uploads"
+UPLOAD_DIR = "/tmp/envforage_uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 ALLOWED_MIME_TYPES = {

@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: envforge_db_prod
+    container_name: envforage_db_prod
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -17,7 +17,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: envforge_redis_prod
+    container_name: envforage_redis_prod
     restart: always
     command: redis-server --requirepass ${REDIS_PASSWORD} --save 60 1 --loglevel warning
     volumes:
@@ -30,7 +30,7 @@ services:
 
   llm:
     image: ollama/ollama
-    container_name: envforge_ollama_prod
+    container_name: envforage_ollama_prod
     restart: always
     volumes:
       - ollama_data:/root/.ollama
@@ -39,7 +39,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: envforge_api_prod
+    container_name: envforage_api_prod
     restart: always
 
     depends_on:
@@ -60,7 +60,7 @@ services:
       DEBUG: "false"
       SECRET_KEY: ${SECRET_KEY}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
-      ENVFORGE_LLM_PROVIDER: ${ENVFORGE_LLM_PROVIDER}
+      ENVFORAGE_LLM_PROVIDER: ${ENVFORAGE_LLM_PROVIDER}
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
       OPENROUTER_MODEL: ${OPENROUTER_MODEL}
       RATE_LIMIT_AI_RPM: ${RATE_LIMIT_AI_RPM:-10}
@@ -82,7 +82,7 @@ services:
       args:
         - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-/api/v1}
         - BACKEND_API_URL=${BACKEND_API_URL:-http://api:8000}
-    container_name: envforge_frontend_prod
+    container_name: envforage_frontend_prod
     restart: always
     ports:
       - "3000:3000"

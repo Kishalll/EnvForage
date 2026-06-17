@@ -49,7 +49,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger_instance = structlog.get_logger(__name__)
 
     logger_instance.info(
-        "EnvForge API starting",
+        "EnvForage API starting",
         version=settings.app_version,
         environment=settings.environment,
     )
@@ -93,7 +93,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
             pass
 
     scheduler.shutdown(wait=False)
-    logger_instance.info("EnvForge API shutting down")
+    logger_instance.info("EnvForage API shutting down")
 
 
 def create_app() -> FastAPI:

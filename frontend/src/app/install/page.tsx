@@ -16,7 +16,7 @@ import React, { useState } from "react";
 
 export default function InstallPage() {
 	const [copied, setCopied] = useState(false);
-	const installCommand = "pip install envforge-agent";
+	const installCommand = "pip install envforage";
 
 	const handleCopy = async () => {
 		try {
@@ -34,21 +34,21 @@ export default function InstallPage() {
 			title: "1. Diagnose Your Machine",
 			description:
 				"Run hardware introspection to detect OS, RAM, GPU, VRAM, and CUDA details without an internet connection.",
-			command: "envforge diagnose",
+			command: "envforage diagnose",
 		},
 		{
 			icon: Sparkles,
 			title: "2. Verify Compatibility",
 			description:
 				"Check if a specific ML environment profile is fully compatible with your current hardware setup.",
-			command: "envforge verify --profile pytorch-cuda",
+			command: "envforage verify --profile pytorch-cuda",
 		},
 		{
 			icon: Wrench,
 			title: "3. Auto-Fix or Generate Setup Scripts",
 			description:
 				"Generate deterministic setup and repair scripts (setup.sh, setup.ps1, Dockerfile) validated against our engine.",
-			command: "envforge fix --profile pytorch-cuda",
+			command: "envforage fix --profile pytorch-cuda",
 		},
 	];
 
@@ -65,7 +65,7 @@ export default function InstallPage() {
 					transition={{ duration: 0.5 }}
 				>
 					<h1 style={{ fontSize: "3rem", marginBottom: "1rem" }}>
-						Get Started with <span className="text-gradient">EnvForge</span>
+						Get Started with <span className="text-gradient">EnvForage</span>
 					</h1>
 					<p
 						style={{
@@ -156,7 +156,7 @@ export default function InstallPage() {
 					</button>
 				</div>
 				<p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
-					Requires Python 3.8+ and pip. EnvForge CLI is fully supported on Linux, WSL2, and Windows.
+					Requires Python 3.8+ and pip. EnvForage CLI is fully supported on Linux, WSL2, and Windows.
 				</p>
 			</motion.div>
 

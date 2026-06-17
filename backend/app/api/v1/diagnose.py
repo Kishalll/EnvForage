@@ -44,7 +44,7 @@ _PROFILE_PAGE_SIZE = 100
     status_code=202,
     summary="Analyze environment compatibility (Async)",
     description=(
-        "Accept a diagnostic report from the EnvForge CLI agent, dispatch a Celery task, "
+        "Accept a diagnostic report from the EnvForage CLI agent, dispatch a Celery task, "
         "and return a task_id for polling."
     ),
     tags=["Diagnostics"],

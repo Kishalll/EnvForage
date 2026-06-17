@@ -9,8 +9,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user and group
-RUN groupadd --system envforge && \
-    useradd --system --gid envforge --no-create-home envforge
+RUN groupadd --system envforage && \
+    useradd --system --gid envforage --no-create-home envforage
 
 # Copy dependency specs first (layer caching)
 COPY pyproject.toml ./
@@ -21,10 +21,10 @@ RUN pip install --no-cache-dir --upgrade pip \
 
 # Copy application code
 COPY . .
-RUN chown -R envforge:envforge /app
+RUN chown -R envforage:envforage /app
 
 # Switch to non-root user
-USER envforge
+USER envforage
 
 EXPOSE 8000
 

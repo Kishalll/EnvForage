@@ -39,7 +39,7 @@ REPAIR_TEMPLATE_MAP: dict[str, str] = {
 
 # ── Default context values ────────────────────────────────────────────────────
 _DEFAULT_CONTEXT: dict[str, Any] = {
-    "envforge_version": "0.4.0",
+    "envforage_version": "0.4.0",
     "generated_at": "",  # Filled at render time
 }
 

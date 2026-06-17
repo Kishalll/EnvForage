@@ -91,7 +91,7 @@ class TestPromptBuilder:
 
     def test_compatibility_context_present(self, builder, sample_request):
         result = builder.build(sample_request)
-        assert "## ENVFORGE COMPATIBILITY CONTEXT" in result
+        assert "## ENVFORAGE COMPATIBILITY CONTEXT" in result
         assert "Supported CUDA versions" in result
 
     def test_user_description_present(self, builder, sample_request):

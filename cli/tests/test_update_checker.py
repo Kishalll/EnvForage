@@ -3,11 +3,11 @@ import pytest
 import json
 import httpx
 
-from envforge_agent.utils import check_for_updates
+from envforage.utils import check_for_updates
 
 
-@patch("envforge_agent.__version__", "0.0.0")
-@patch("sys.argv", ["envforge"])
+@patch("envforage.__version__", "0.0.0")
+@patch("sys.argv", ["envforage"])
 @patch("httpx.Client")
 @patch("click.echo")
 def test_update_available(mock_echo, mock_client_class) -> None:
@@ -22,15 +22,15 @@ def test_update_available(mock_echo, mock_client_class) -> None:
     check_for_updates()
 
     mock_echo.assert_called_once()
-    assert "[!] A new version of envforge-agent is available: 99.9.9" in mock_echo.call_args[0][0]
+    assert "[!] A new version of envforage is available: 99.9.9" in mock_echo.call_args[0][0]
     assert mock_echo.call_args[1]["err"] is True
 
 
-@patch("sys.argv", ["envforge"])
+@patch("sys.argv", ["envforage"])
 @patch("httpx.Client")
 @patch("click.echo")
 def test_no_update_available(mock_echo, mock_client_class) -> None:
-    from envforge_agent import __version__
+    from envforage import __version__
 
     mock_client = MagicMock()
     mock_client_class.return_value.__enter__.return_value = mock_client
@@ -45,7 +45,7 @@ def test_no_update_available(mock_echo, mock_client_class) -> None:
     mock_echo.assert_not_called()
 
 
-@patch("sys.argv", ["envforge"])
+@patch("sys.argv", ["envforage"])
 @patch("httpx.Client")
 @patch("click.echo")
 def test_non_json_response_fails_silently(mock_echo, mock_client_class) -> None:
@@ -65,7 +65,7 @@ def test_non_json_response_fails_silently(mock_echo, mock_client_class) -> None:
     mock_echo.assert_not_called()
 
 
-@patch("sys.argv", ["envforge"])
+@patch("sys.argv", ["envforage"])
 @patch("httpx.Client")
 @patch("click.echo")
 def test_network_error_fails_silently(mock_echo, mock_client_class) -> None:
@@ -81,7 +81,7 @@ def test_network_error_fails_silently(mock_echo, mock_client_class) -> None:
     mock_echo.assert_not_called()
 
 
-@patch("sys.argv", ["envforge", "--quiet"])
+@patch("sys.argv", ["envforage", "--quiet"])
 @patch("httpx.Client")
 @patch("click.echo")
 def test_quiet_flag_suppresses_check(mock_echo, mock_client_class) -> None:
@@ -90,7 +90,7 @@ def test_quiet_flag_suppresses_check(mock_echo, mock_client_class) -> None:
     mock_echo.assert_not_called()
 
 
-@patch("sys.argv", ["envforge", "-q"])
+@patch("sys.argv", ["envforage", "-q"])
 @patch("httpx.Client")
 @patch("click.echo")
 def test_q_flag_suppresses_check(mock_echo, mock_client_class) -> None:

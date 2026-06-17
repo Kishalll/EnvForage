@@ -129,6 +129,7 @@ async def verify_environment(
 
     # Flush to ensure IDs are generated and constraints are checked
     await db.flush()
+    await db.commit()
 
     return VerificationResponse(
         result_id=db_result.id,

@@ -5,7 +5,10 @@ import os
 
 import aiofiles
 import magic
-from fastapi import APIRouter, File, Header, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, Header, HTTPException, UploadFile, status
+
+from app.api.deps import get_current_user
+from app.middleware.rate_limit import general_rate_limit
 
 router = APIRouter()
 logger = logging.getLogger("UploadPipeline")
@@ -27,12 +30,21 @@ async def upload_chunked_file(
     x_upload_id: str = Header(...),
     x_chunk_number: int = Header(...),
     x_total_chunks: int = Header(...),
+    _user: str = Depends(get_current_user),
+    _rate_limit: None = Depends(general_rate_limit),
 ):
     """
     Handles highly robust chunked and resumable file uploads.
     Validates MIME type via python-magic on the first chunk.
     """
-    temp_file_path = os.path.join(UPLOAD_DIR, f"{x_upload_id}.part")
+    # Sanitize upload ID to prevent path traversal in temp file name
+    safe_upload_id = os.path.basename(x_upload_id)
+    if not safe_upload_id or safe_upload_id != x_upload_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid upload ID",
+        )
+    temp_file_path = os.path.join(UPLOAD_DIR, f"{safe_upload_id}.part")
 
     try:
         chunk_data = await file.read()
@@ -55,7 +67,16 @@ async def upload_chunked_file(
 
         # If final chunk, assemble and move
         if x_chunk_number == x_total_chunks:
-            filename = file.filename or "uploaded_file"
+            raw_name = file.filename or "uploaded_file"
+            # Security: strip all path components to prevent path traversal
+            # (e.g. "../../etc/cron.d/pwned" → "pwned")
+            filename = os.path.basename(raw_name)
+            # Reject filenames with only unsafe characters
+            if not filename or filename.startswith("."):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid or unsafe filename",
+                )
             final_path = os.path.join(UPLOAD_DIR, filename)
             os.rename(temp_file_path, final_path)
 

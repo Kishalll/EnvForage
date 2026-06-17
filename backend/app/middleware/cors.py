@@ -38,9 +38,12 @@ class DynamicCORSMiddleware(BaseHTTPMiddleware):
         if not origin:
             return False
 
-        # Development override
-        if origin.startswith("http://localhost:") or origin.startswith("http://127.0.0.1:"):
-            return True
+        # Development override — only allow localhost in non-production environments
+        # to prevent cross-origin attacks from localhost services on shared servers.
+        from app.config import get_settings
+        if get_settings().environment != "production":
+            if origin.startswith("http://localhost:") or origin.startswith("http://127.0.0.1:"):
+                return True
 
         for pattern in self.allowed_regexes:
             if pattern.match(origin):

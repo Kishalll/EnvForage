@@ -103,6 +103,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 def create_app() -> FastAPI:
     settings = get_settings()
+    _is_prod = settings.environment == "production"
     app = FastAPI(
         title=settings.app_name,
         version=settings.app_version,
@@ -111,9 +112,9 @@ def create_app() -> FastAPI:
             "Generates setup scripts, diagnoses environments, and provides "
             "AI-assisted troubleshooting."
         ),
-        docs_url="/api/docs",
-        redoc_url="/api/redoc",
-        openapi_url="/api/openapi.json",
+        docs_url=None if _is_prod else "/api/docs",
+        redoc_url=None if _is_prod else "/api/redoc",
+        openapi_url=None if _is_prod else "/api/openapi.json",
         lifespan=lifespan,
     )
     setup_logging()

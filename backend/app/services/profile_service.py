@@ -313,7 +313,15 @@ async def update_profile(
     If ``packages`` is provided the existing package list is replaced entirely.
     Returns the updated profile, or ``None`` if not found.
     """
-    profile = await get_profile_by_slug(db, slug)
+    # Fetch ORM object directly, NOT from cache — mutations require a real
+    # SQLAlchemy model instance (dicts returned by cache would crash here).
+    result = await db.execute(
+        select(EnvironmentProfile)
+        .where(EnvironmentProfile.slug == slug)
+        .where(EnvironmentProfile.deleted_at.is_(None))
+        .options(selectinload(EnvironmentProfile.packages))
+    )
+    profile = result.scalar_one_or_none()
     if not profile:
         return None
 

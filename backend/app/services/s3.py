@@ -3,13 +3,14 @@
 import logging
 from typing import Any
 
-from botocore.exceptions import ClientError
-
 try:
     import aioboto3
+    from botocore.exceptions import ClientError
     AIOBOTO3_AVAILABLE = True
 except ImportError:
     AIOBOTO3_AVAILABLE = False
+    # Placeholder so type annotations and except clauses don't break
+    ClientError = Exception  # type: ignore[assignment,misc]
 
 logger = logging.getLogger("S3Storage")
 

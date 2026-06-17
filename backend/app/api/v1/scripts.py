@@ -15,7 +15,11 @@ from app.compatibility.errors import (
 )
 from app.middleware.rate_limit import general_rate_limit
 from app.schemas.script import GenerationRequest, GenerationResponse
-from app.services import profile_service, script_service
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
+
+from app.models.profile import EnvironmentProfile
+from app.services import script_service
 
 router = APIRouter()
 
@@ -57,7 +61,15 @@ async def generate_scripts(
     Any incompatibility is returned as a structured 409 error.
     """
     # Load profile
-    profile = await profile_service.get_profile_by_slug(db, request.profile_id)
+    # Fetch ORM object directly — NOT from cache. script_service.generate_scripts()
+    # needs a real SQLAlchemy model (not a cached dict).
+    result = await db.execute(
+        select(EnvironmentProfile)
+        .where(EnvironmentProfile.slug == request.profile_id)
+        .where(EnvironmentProfile.deleted_at.is_(None))
+        .options(selectinload(EnvironmentProfile.packages))
+    )
+    profile = result.scalar_one_or_none()
     if profile is None:
         raise HTTPException(
             status_code=404,

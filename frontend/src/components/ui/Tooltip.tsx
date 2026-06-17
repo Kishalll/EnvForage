@@ -1,40 +1,5 @@
 "use client";
-import React, { useState } from 'react';
 
-interface TooltipProps {
-  content: string;
-  children: React.ReactNode;
-  position?: 'top' | 'bottom' | 'left' | 'right';
-}
-
-export const Tooltip: React.FC<TooltipProps> = ({ content, children, position = 'top' }) => {
-  const [isVisible, setIsVisible] = useState(false);
-
-  const posStyles = {
-    top: "bottom-full left-1/2 -translate-x-1/2 mb-2",
-    bottom: "top-full left-1/2 -translate-x-1/2 mt-2",
-    left: "right-full top-1/2 -translate-y-1/2 mr-2",
-    right: "left-full top-1/2 -translate-y-1/2 ml-2"
-  };
-
-  return (
-    <div 
-      className="relative inline-flex items-center justify-center"
-      onMouseEnter={() => setIsVisible(true)}
-      onMouseLeave={() => setIsVisible(false)}
-    >
-      {children}
-      {isVisible && (
-        <div className={`absolute z-50 px-3 py-1.5 text-xs font-mono text-[var(--text-inverse)] bg-[var(--bg-inverse)] rounded-md whitespace-nowrap shadow-xl animate-in fade-in zoom-in duration-200 ${posStyles[position]}`}>
-          {content}
-          {/* Subtle triangle pointer could be added here */}
-        </div>
-      )}
-    </div>
-  );
-};
-
-// --- Reusable Tooltip Component ---
 import React, { useState, useRef, useEffect, ReactNode, forwardRef } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -57,14 +22,6 @@ export interface TooltipProps {
   disabled?: boolean;
 }
 
-/**
- * A highly robust Tooltip component.
- * Features:
- * - Uses React Portals to render at the document root (avoids z-index / overflow clipping issues)
- * - Dynamic repositioning if it collides with viewport boundaries
- * - Accessible focus/blur event listeners for keyboard navigation
- * - Hover intent delays to prevent flickering
- */
 export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
   (
     {
@@ -101,7 +58,6 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
         case 'top':
           top = triggerRect.top - tooltipRect.height - margin;
           left = triggerRect.left + (triggerRect.width / 2) - (tooltipRect.width / 2);
-          // Viewport collision adjustment
           if (top < 0) top = triggerRect.bottom + margin;
           break;
         case 'bottom':
@@ -121,7 +77,6 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
           break;
       }
 
-      // Final viewport boundary checks for horizontal overflow
       if (left < margin) left = margin;
       if (left + tooltipRect.width > window.innerWidth - margin) {
         left = window.innerWidth - tooltipRect.width - margin;
@@ -148,7 +103,6 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
     useEffect(() => {
       if (isVisible) {
         calculatePosition();
-        // Recalculate on scroll or resize
         window.addEventListener('scroll', calculatePosition, { passive: true });
         window.addEventListener('resize', calculatePosition, { passive: true });
         return () => {
@@ -203,7 +157,6 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
         >
           {children}
         </div>
-        {/* Render tooltip at document root to avoid z-index trapping */}
         {typeof document !== 'undefined' && tooltipElement
           ? createPortal(tooltipElement, document.body)
           : null}

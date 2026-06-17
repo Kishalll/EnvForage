@@ -1,5 +1,5 @@
-from fastapi import APIRouter, HTTPException, Query
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, Query
+from pydantic import BaseModel
 
 router = APIRouter(prefix="/locations", tags=["Locations"])
 
@@ -8,7 +8,7 @@ class Location(BaseModel):
     name: str
     latitude: float
     longitude: float
-    
+
 # Mock database with spatial indexes
 # In a real scenario, this would be a PostGIS database or MongoDB 2dsphere index
 MOCK_LOCATIONS = [
@@ -23,13 +23,13 @@ def calculate_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> fl
     # Haversine formula placeholder for demo
     # Real app uses DB geospatial functions
     import math
-    R = 6371.0 # Earth radius in km
-    
+    earth_radius = 6371.0  # Earth radius in km
+
     dlat = math.radians(lat2 - lat1)
     dlon = math.radians(lon2 - lon1)
     a = math.sin(dlat / 2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2)**2
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-    return R * c
+    return earth_radius * c
 
 @router.get(
     "/nearby",
@@ -49,17 +49,17 @@ async def get_nearby_locations(
     lat_delta = radius_km / 111.0
     import math
     lon_delta = radius_km / (111.0 * math.cos(math.radians(latitude)))
-    
+
     min_lat, max_lat = latitude - lat_delta, latitude + lat_delta
     min_lon, max_lon = longitude - lon_delta, longitude + lon_delta
-    
+
     # 2. Optimized Database Query (Simulated)
     # First, filter by bounding box (utilizes indexes in PostGIS/MongoDB)
     bbox_filtered = [
         loc for loc in MOCK_LOCATIONS
         if min_lat <= loc.latitude <= max_lat and min_lon <= loc.longitude <= max_lon
     ]
-    
+
     # 3. Precise Distance Calculation on the reduced set
     results = []
     for loc in bbox_filtered:
@@ -69,10 +69,10 @@ async def get_nearby_locations(
                 "location": loc,
                 "distance_km": round(distance, 2)
             })
-            
+
     # Sort by nearest
     results.sort(key=lambda x: x["distance_km"])
-    
+
     return {
         "center": {"latitude": latitude, "longitude": longitude},
         "radius_km": radius_km,

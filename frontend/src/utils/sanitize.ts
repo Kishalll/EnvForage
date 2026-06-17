@@ -1,4 +1,6 @@
 
+import React from 'react';
+
 // --- DOMPurify HTML Sanitizer ---
 // Note: In a real project, run `npm install dompurify @types/dompurify`
 // import DOMPurify from 'dompurify';
@@ -99,11 +101,8 @@ export const SafeHtml: React.FC<{ html: string; className?: string; config?: San
 }) => {
   const safeContent = sanitizeHtml(html, config);
   
-  return (
-    <div 
-      className={className}
-      // eslint-disable-next-line react/no-danger
-      dangerouslySetInnerHTML={{ __html: safeContent }} 
-    />
-  );
+  return React.createElement("div", {
+    className,
+    dangerouslySetInnerHTML: { __html: safeContent }
+  });
 };

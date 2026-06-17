@@ -247,9 +247,9 @@ async def update_profile(
 
 # --- Specialized UnitOfWork for Profiles ---
 import contextlib
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import SQLAlchemyError
 import logging
+
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger("ProfileUoW")
 
@@ -266,7 +266,7 @@ async def profile_transaction_boundary(db: AsyncSession):
             logger.debug("Entering profile transaction boundary")
             yield nested
             # Implicitly commits the nested transaction
-            
+
     except SQLAlchemyError as e:
         logger.error(f"Transaction aborted due to DB error: {e}")
         # The nested transaction is automatically rolled back
@@ -279,37 +279,38 @@ async def profile_transaction_boundary(db: AsyncSession):
 
 class ProfileQueryBuilder:
     """Advanced query builder for dynamic profile filtering."""
-    
+
     def __init__(self, base_query):
         self.query = base_query
-        
+
     def apply_tags(self, tags: list[str] | None):
         if tags:
             # Complex tag matching logic would go here
             pass
         return self
-        
+
     def apply_os(self, os_name: str | None):
         if os_name:
             # OS filtering logic
             pass
         return self
-        
+
     def build(self):
         return self.query
 
 
 # --- Cursor-Based Pagination Engine ---
-from typing import Generic, TypeVar, List, Optional
+import base64
+from typing import Any, Generic, TypeVar
+
 from pydantic import BaseModel
 from sqlalchemy.sql import Select
-import base64
 
 T = TypeVar("T")
 
 class CursorPagination(BaseModel, Generic[T]):
-    items: List[T]
-    next_cursor: Optional[str] = None
+    items: list[T]
+    next_cursor: str | None = None
     has_more: bool = False
 
 class PaginationEngine:
@@ -336,7 +337,7 @@ class PaginationEngine:
         return stmt
 
     @staticmethod
-    def build_response(items: List[Any], limit: int, cursor_attr: str) -> CursorPagination:
+    def build_response(items: list[Any], limit: int, cursor_attr: str) -> CursorPagination:
         has_more = len(items) > limit
         if has_more:
             items = items[:limit]
@@ -344,7 +345,7 @@ class PaginationEngine:
             next_cursor = PaginationEngine.encode_cursor(str(getattr(last_item, cursor_attr)))
         else:
             next_cursor = None
-            
+
         return CursorPagination(
             items=items,
             next_cursor=next_cursor,

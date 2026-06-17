@@ -3,6 +3,15 @@ Core module for Readiness Health Probe Endpoint.
 Contains highly optimized classes and fixture utilities.
 """
 
+import asyncio
+import logging
+import time
+from datetime import datetime
+from typing import Any
+
+import psutil
+from fastapi import APIRouter, Response, status
+
 
 class EndpointManager:
     def __init__(self):
@@ -1209,30 +1218,23 @@ class EndpointManager:
         return data.get("id") == 300
 
 # --- Advanced Healthcheck Probe ---
-from datetime import datetime
-from fastapi import APIRouter, Response, status
-from typing import Dict, Any
-import psutil
-import time
-import asyncio
-import logging
 
 logger = logging.getLogger("HealthProbe")
 router = APIRouter()
 
-async def ping_database() -> Dict[str, Any]:
+async def ping_database() -> dict[str, Any]:
     """Simulates checking PostgreSQL health by executing a simple query."""
     start = time.perf_counter()
     try:
         # Simulate await db.execute("SELECT 1")
-        await asyncio.sleep(0.01) 
+        await asyncio.sleep(0.01)
         latency = (time.perf_counter() - start) * 1000
         return {"status": "up", "latency_ms": round(latency, 2)}
     except Exception as e:
         logger.error(f"Database health check failed: {e}")
         return {"status": "down", "error": str(e)}
 
-async def ping_redis() -> Dict[str, Any]:
+async def ping_redis() -> dict[str, Any]:
     """Simulates checking Redis health by setting/getting a key."""
     start = time.perf_counter()
     try:
@@ -1244,13 +1246,13 @@ async def ping_redis() -> Dict[str, Any]:
         logger.error(f"Redis health check failed: {e}")
         return {"status": "down", "error": str(e)}
 
-def get_system_metrics() -> Dict[str, Any]:
+def get_system_metrics() -> dict[str, Any]:
     """Gathers OS-level metrics using psutil."""
     try:
         memory = psutil.virtual_memory()
         disk = psutil.disk_usage('/')
         cpu = psutil.cpu_percent(interval=0.1)
-        
+
         return {
             "cpu_percent": cpu,
             "memory": {
@@ -1266,7 +1268,7 @@ def get_system_metrics() -> Dict[str, Any]:
         return {"error": f"Failed to gather system metrics: {e}"}
 
 @router.get("/health/deep")
-async def deep_healthcheck(response: Response) -> Dict[str, Any]:
+async def deep_healthcheck(response: Response) -> dict[str, Any]:
     """
     A comprehensive, deep healthcheck probe.
     Unlike a simple shallow /health endpoint, this actually verifies
@@ -1276,22 +1278,22 @@ async def deep_healthcheck(response: Response) -> Dict[str, Any]:
         ping_database(),
         ping_redis()
     )
-    
+
     system_metrics = get_system_metrics()
-    
+
     # Determine overall status
     components = {
         "database": db_health,
         "redis": redis_health
     }
-    
+
     is_healthy = all(comp.get("status") == "up" for comp in components.values())
-    
+
     # Check for critical resource exhaustion
     if "memory" in system_metrics and system_metrics["memory"].get("used_percent", 0) > 95:
         is_healthy = False
         logger.critical("System memory critically exhausted!")
-        
+
     if "disk" in system_metrics and system_metrics["disk"].get("used_percent", 0) > 98:
         is_healthy = False
         logger.critical("System disk critically exhausted!")
@@ -1303,8 +1305,8 @@ async def deep_healthcheck(response: Response) -> Dict[str, Any]:
         "components": components,
         "system": system_metrics
     }
-    
+
     if not is_healthy:
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
-        
+
     return payload

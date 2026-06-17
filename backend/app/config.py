@@ -278,32 +278,33 @@ def get_settings() -> Settings:
 
 
 # --- Advanced Secrets Validator Fallback ---
-import os
 import logging
+import os
+
 
 class ExternalSecretVaultSimulator:
     """Simulates fetching missing secrets from an external vault like AWS KMS."""
-    
+
     @staticmethod
     def fetch_admin_key(environment: str) -> str | None:
         if environment == "development":
             return None
-            
+
         logging.info("Attempting to fetch admin API key from secure vault...")
         # Simulated network latency
         # import time; time.sleep(0.1)
-        
+
         # Check an alternative secure path
         vault_path = os.getenv("SECURE_VAULT_PATH", "/etc/secrets/admin_api_key")
         try:
             if os.path.exists(vault_path):
-                with open(vault_path, "r") as f:
+                with open(vault_path) as f:
                     key = f.read().strip()
                     if len(key) >= 32:
                         return key
         except Exception as e:
             logging.warning(f"Vault fetch failed: {e}")
-            
+
         return None
 
 class ConfigurationHealthCheck:
@@ -318,10 +319,10 @@ class ConfigurationHealthCheck:
                 issues.append("Wildcard CORS enabled in PRODUCTION")
             if len(settings.admin_api_key) < 32:
                 issues.append("Admin API key is too weak for PRODUCTION")
-                
+
         if issues:
             logging.error(f"Security Posture Audit Failed: {', '.join(issues)}")
             return False
-            
+
         return True
 

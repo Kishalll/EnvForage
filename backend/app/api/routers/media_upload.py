@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, Request, HTTPException, status
-from fastapi.responses import JSONResponse
 import time
+
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi.responses import JSONResponse
 
 router = APIRouter(prefix="/media", tags=["Media"])
 
@@ -23,16 +24,16 @@ async def verify_content_length(request: Request):
 async def rate_limiter(request: Request):
     client_ip = request.client.host if request.client else "unknown"
     current_time = time.time()
-    
+
     if client_ip not in rate_limit_records:
         rate_limit_records[client_ip] = []
-        
+
     # Clean up old records
     rate_limit_records[client_ip] = [t for t in rate_limit_records[client_ip] if current_time - t < RATE_LIMIT_DURATION]
-    
+
     if len(rate_limit_records[client_ip]) >= RATE_LIMIT_REQUESTS:
         raise HTTPException(status_code=429, detail="Too Many Requests. Please try again later.")
-        
+
     rate_limit_records[client_ip].append(current_time)
     return True
 
@@ -49,7 +50,7 @@ async def upload_media(request: Request):
     content_type = request.headers.get("content-type", "")
     if not content_type.startswith("image/") and not content_type.startswith("video/"):
         raise HTTPException(status_code=415, detail="Unsupported Media Type. Only images and videos are allowed.")
-        
+
     return JSONResponse(
         content={
             "message": "Media uploaded successfully",

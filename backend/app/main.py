@@ -3,9 +3,11 @@ FastAPI application factory and lifespan management.
 """
 
 import asyncio
+import enum
 import sys
+import time
 import typing
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, Callable
 from contextlib import asynccontextmanager
 
 import structlog
@@ -15,11 +17,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
+from app.api.routers import media_upload, spatial_query
 from app.api.v1 import (
     authentication,
     compatibility,
     diagnose,
-    health as health_v1,
     profiles,
     recommend,
     repair,
@@ -27,8 +29,10 @@ from app.api.v1 import (
     troubleshoot,
     verify,
 )
+from app.api.v1 import (
+    health as health_v1,
+)
 from app.api.v1.admin.matrix import router as admin_matrix_router
-from app.api.routers import media_upload, spatial_query
 from app.cache import get_redis_client
 from app.config import get_settings
 from app.core.handlers import register_exception_handlers
@@ -197,9 +201,7 @@ app = create_app()
 
 
 # --- Advanced Application State Manager ---
-import enum
-import time
-from typing import Dict, Any, Callable
+
 
 class AppState(enum.Enum):
     INITIALIZING = "initializing"
@@ -213,7 +215,7 @@ class GracefulShutdownManager:
         self.state = AppState.INITIALIZING
         self.hooks: list[Callable] = []
         self.start_time = time.time()
-        self.components: Dict[str, str] = {}
+        self.components: dict[str, str] = {}
 
     def register_hook(self, func: Callable):
         self.hooks.append(func)
@@ -229,7 +231,7 @@ class GracefulShutdownManager:
     async def execute_shutdown(self):
         self.transition(AppState.SHUTTING_DOWN)
         import logging
-        
+
         for hook in reversed(self.hooks):
             try:
                 logging.info(f"Executing shutdown hook: {hook.__name__}")
@@ -240,7 +242,7 @@ class GracefulShutdownManager:
                     hook()
             except Exception as e:
                 logging.error(f"Shutdown hook {hook.__name__} failed: {e}")
-                
+
         self.transition(AppState.TERMINATED)
         logging.info(f"Uptime: {time.time() - self.start_time:.2f} seconds")
 

@@ -1,8 +1,8 @@
 
 # --- S3 Blob Storage Interface ---
 import logging
-import asyncio
-from typing import Optional, Dict, Any
+from typing import Any
+
 from botocore.exceptions import ClientError
 
 try:
@@ -16,7 +16,7 @@ logger = logging.getLogger("S3Storage")
 class S3StorageService:
     """
     An asynchronous wrapper around AWS S3 using aioboto3.
-    Supports bucket creation, file uploading, and generating pre-signed URLs 
+    Supports bucket creation, file uploading, and generating pre-signed URLs
     for direct client-to-S3 uploads, reducing backend bandwidth overhead.
     """
     def __init__(self, region_name: str, aws_access_key_id: str, aws_secret_access_key: str, bucket_name: str):
@@ -24,7 +24,7 @@ class S3StorageService:
         self.aws_access_key_id = aws_access_key_id
         self.aws_secret_access_key = aws_secret_access_key
         self.bucket_name = bucket_name
-        
+
         if AIOBOTO3_AVAILABLE:
             self.session = aioboto3.Session(
                 aws_access_key_id=self.aws_access_key_id,
@@ -37,7 +37,7 @@ class S3StorageService:
         if not AIOBOTO3_AVAILABLE:
             logger.warning("aioboto3 not installed. Simulated S3 upload.")
             return True
-            
+
         try:
             async with self.session.client("s3") as s3_client:
                 await s3_client.put_object(
@@ -52,13 +52,13 @@ class S3StorageService:
             logger.error(f"S3 Upload failed: {e}")
             return False
 
-    async def generate_presigned_url(self, object_name: str, expiration_seconds: int = 3600) -> Optional[str]:
+    async def generate_presigned_url(self, object_name: str, expiration_seconds: int = 3600) -> str | None:
         """
         Generates a temporary URL allowing clients to download a private file.
         """
         if not AIOBOTO3_AVAILABLE:
             return f"https://mock-s3-url.com/{self.bucket_name}/{object_name}?sig=mock"
-            
+
         try:
             async with self.session.client("s3") as s3_client:
                 response = await s3_client.generate_presigned_url(
@@ -71,14 +71,14 @@ class S3StorageService:
             logger.error(f"Failed to generate S3 presigned URL: {e}")
             return None
 
-    async def generate_presigned_post(self, object_name: str, conditions: list = None, expiration_seconds: int = 3600) -> Optional[Dict[str, Any]]:
+    async def generate_presigned_post(self, object_name: str, conditions: list = None, expiration_seconds: int = 3600) -> dict[str, Any] | None:
         """
         Generates a pre-signed POST payload allowing browsers to upload files
         directly to S3 without passing through the backend, bounded by conditions (e.g. file size limits).
         """
         if not AIOBOTO3_AVAILABLE:
             return {"url": "https://mock-s3", "fields": {"key": object_name}}
-            
+
         try:
             async with self.session.client("s3") as s3_client:
                 response = await s3_client.generate_presigned_post(

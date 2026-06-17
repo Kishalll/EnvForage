@@ -130,7 +130,7 @@ export function useHistory<T>(
  * Useful for transition animations or differential logic.
  */
 export function usePrevious<T>(value: T): T | undefined {
-  const ref = useRef<T>();
+  const ref = useRef<T | undefined>(undefined);
   
   // useEffect runs AFTER the render cycle completes
   // So ref.current will always represent the value from the *last* render
@@ -139,7 +139,7 @@ export function usePrevious<T>(value: T): T | undefined {
   // }, [value]);
   // 
   // However, in React 18 Concurrent mode, it's safer to track it synchronously during render:
-  const prevRef = useRef<T>();
+  const prevRef = useRef<T | undefined>(undefined);
   const currRef = useRef<T>(value);
   
   if (currRef.current !== value) {

@@ -1,7 +1,7 @@
 "use client";
 
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
-import { createContext, useContext, useEffect, useState } from "react";
 
 // Create a context to share theme state across components
 const ThemeContext = createContext<{

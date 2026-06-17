@@ -102,7 +102,7 @@ export const Tabs: React.FC<TabsProps> = ({
           return (
             <button
               key={tab.id}
-              ref={(el) => (tabRefs.current[index] = el)}
+              ref={(el) => { tabRefs.current[index] = el; }}
               role="tab"
               aria-selected={isActive}
               aria-controls={`panel-${tab.id}`}

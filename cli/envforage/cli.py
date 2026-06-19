@@ -130,10 +130,10 @@ def cli(ctx: click.Context, no_color: bool) -> None:
     "--format",
     "-f",
     "output_format",
-    type=click.Choice(["json", "yaml", "markdown"], case_sensitive=False),
-    default="json",
+    type=click.Choice(["table", "json", "minimal"], case_sensitive=False),
+    default="table",
     show_default=True,
-    help="Output format for the diagnostic report (json, yaml, markdown).",
+    help="Output format: table (default Rich table), json (structured JSON), minimal (one-liner).",
 )
 @click.option(
     "--timeout",
@@ -149,7 +149,7 @@ def diagnose(
     quiet: bool,
     sarif: bool,
     timeout: int | None,
-    output_format: str = "json",
+    output_format: str = "table",
 ) -> None:
     config = load_config()
     final_api_url = api_url or config.api_url
@@ -202,31 +202,34 @@ async def _diagnose(
         click.echo(_json.dumps(report.to_sarif(), indent=2))
         return
 
-    if send and output_format != "json":
+    if send and output_format not in ("json", "table"):
         err_console.print(
-            f"[ERROR] --send requires JSON; --format {output_format} is incompatible."
+            f"[ERROR] --send requires JSON format; --format {output_format} is incompatible."
         )
-        err_console.print("  Hint: Remove --format or drop --send.")
+        err_console.print("  Hint: Use --format json or drop --send.")
         sys.exit(1)
 
-    if output_format == "yaml":
-        import yaml
-
-        report_output = yaml.dump(
-            report.model_dump(mode="json"), default_flow_style=False, sort_keys=False
+    if output_format == "minimal":
+        report_output = (
+            f"OS={report.os.name} {report.os.version} | "
+            f"CPU={report.cpu.cores}C/{report.cpu.threads}T | "
+            f"RAM={report.ram.total_gb}GB | "
+            f"GPU={'None' if not report.gpus else report.gpus[0].name} | "
+            f"CUDA={report.cuda.version or 'None'} | "
+            f"Python={report.active_python.version if report.active_python else 'None'}"
         )
-    elif output_format == "markdown":
-        report_output = report.to_markdown()
-    else:
+    elif output_format == "table":
+        report_output = None  # Rich table already printed above
+    else:  # json
         report_output = report.to_json(indent=2)
 
     # ── Output to file ──────────────────────────────────────────────────────
     if output:
-        Path(output).write_text(report_output, encoding="utf-8")
-        if not quiet:
-            console.print(f"\n[green][+][/] Report saved to [bold]{output}[/]")
-    elif not send:
-        # Print JSON to stdout (pipe-friendly)
+        if report_output is not None:
+            Path(output).write_text(report_output, encoding="utf-8")
+            if not quiet:
+                console.print(f"\n[green][+][/] Report saved to [bold]{output}[/]")
+    elif not send and report_output is not None:
         click.echo(report_output)
 
     # ── Send to API ─────────────────────────────────────────────────────────

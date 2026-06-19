@@ -175,7 +175,7 @@ export default function ArchitecturePage() {
 						gap: "1.5rem",
 						padding: "1.5rem",
 						borderRadius: "12px",
-						backgroundColor: "rgba(255, 255, 255, 0.02)",
+						backgroundColor: "var(--bg-secondary)",
 						border: "1px solid var(--border-subtle)",
 						alignItems: "flex-start",
 					}}
@@ -209,7 +209,7 @@ export default function ArchitecturePage() {
 						gap: "1.5rem",
 						padding: "1.5rem",
 						borderRadius: "12px",
-						backgroundColor: "rgba(255, 255, 255, 0.02)",
+						backgroundColor: "var(--bg-secondary)",
 						border: "1px solid var(--border-subtle)",
 						alignItems: "flex-start",
 					}}
@@ -243,7 +243,7 @@ export default function ArchitecturePage() {
 						gap: "1.5rem",
 						padding: "1.5rem",
 						borderRadius: "12px",
-						backgroundColor: "rgba(255, 255, 255, 0.02)",
+						backgroundColor: "var(--bg-secondary)",
 						border: "1px solid var(--border-subtle)",
 						alignItems: "flex-start",
 					}}

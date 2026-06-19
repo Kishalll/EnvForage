@@ -19,7 +19,7 @@ export function useTheme() {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-	const [theme, setTheme] = useState<"dark" | "light" | "system">("light");
+	const [theme, setTheme] = useState<"dark" | "light" | "system">("dark");
 	const [mounted, setMounted] = useState(false);
 
 	const applyTheme = (newTheme: "dark" | "light" | "system") => {
@@ -52,6 +52,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 			applyTheme(storedTheme);
 		} else {
 			// Default to dark mode
+			setTheme("dark");
 			applyTheme("dark");
 		}
 	}, []);

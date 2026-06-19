@@ -170,6 +170,11 @@ export default function Navbar() {
 						);
 					})}
 					<hr style={{ borderColor: "var(--border-subtle)", margin: "0.5rem 0" }} />
+					<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+						<span style={{ color: "var(--text-secondary)", fontSize: "1.125rem", fontWeight: 500 }}>Theme</span>
+						<ThemeToggle />
+					</div>
+					<hr style={{ borderColor: "var(--border-subtle)", margin: "0.5rem 0" }} />
 					<a
 						href="https://discord.gg/N2GKNRzDV"
 						target="_blank"

@@ -165,7 +165,7 @@ print(f"Packages: {data['packages']}")`,
 			{/* API Endpoint header */}
 			<div
 				style={{
-					backgroundColor: "rgba(18, 18, 22, 0.5)",
+					backgroundColor: "var(--bg-secondary)",
 					border: "1px solid var(--border-subtle)",
 					borderRadius: "12px",
 					padding: "1.25rem 1.5rem",
@@ -199,7 +199,7 @@ print(f"Packages: {data['packages']}")`,
 			{/* API SIMULATOR WIDGET */}
 			<div
 				style={{
-					backgroundColor: "rgba(18, 18, 22, 0.4)",
+					backgroundColor: "var(--bg-secondary)",
 					border: "1px solid var(--border-subtle)",
 					borderRadius: "16px",
 					padding: "2rem",
@@ -330,12 +330,12 @@ print(f"Packages: {data['packages']}")`,
 									overflowX: "auto",
 									fontFamily: "var(--font-mono)",
 									fontSize: "0.825rem",
-									color: "var(--text-secondary)",
+									color: "#e4e4e7",
 									margin: 0,
 									height: "180px",
 								}}
 							>
-								<code>{codeSnippets[activeTab]}</code>
+								<code style={{ color: "inherit" }}>{codeSnippets[activeTab]}</code>
 							</pre>
 							<button
 								onClick={() => copyCode(codeSnippets[activeTab], "request")}
@@ -348,7 +348,7 @@ print(f"Packages: {data['packages']}")`,
 									borderRadius: "6px",
 									padding: "4px",
 									cursor: "pointer",
-									color: copiedId === "request" ? "var(--brand-primary)" : "var(--text-secondary)",
+									color: copiedId === "request" ? "var(--brand-primary)" : "#a1a1aa",
 								}}
 							>
 								{copiedId === "request" ? <Check size={14} /> : <Copy size={14} />}
@@ -378,7 +378,7 @@ print(f"Packages: {data['packages']}")`,
 									height: "180px",
 								}}
 							>
-								<code>{getSimulatedResponse()}</code>
+								<code style={{ color: "inherit" }}>{getSimulatedResponse()}</code>
 							</pre>
 							<button
 								onClick={() => copyCode(getSimulatedResponse(), "response")}
@@ -391,7 +391,7 @@ print(f"Packages: {data['packages']}")`,
 									borderRadius: "6px",
 									padding: "4px",
 									cursor: "pointer",
-									color: copiedId === "response" ? "var(--brand-primary)" : "var(--text-secondary)",
+									color: copiedId === "response" ? "var(--brand-primary)" : "#a1a1aa",
 								}}
 							>
 								{copiedId === "response" ? <Check size={14} /> : <Copy size={14} />}

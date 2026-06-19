@@ -137,13 +137,15 @@ export default function DocsLayout({
 		>
 			{/* DESKTOP SIDEBAR */}
 			<aside
-				className="hide-on-mobile"
+				className="hide-on-mobile glass-panel"
 				style={{
 					width: "300px",
 					borderRight: "1px solid var(--border-subtle)",
+					borderTop: "none",
+					borderBottom: "none",
+					borderLeft: "none",
+					borderRadius: 0,
 					padding: "2rem",
-					backgroundColor: "rgba(18, 18, 22, 0.4)",
-					backdropFilter: "blur(10px)",
 					height: "calc(100vh - 140px)",
 					position: "sticky",
 					top: "76px",
@@ -251,7 +253,7 @@ export default function DocsLayout({
 							width: "100%",
 							padding: "0.75rem 1rem 0.75rem 2.25rem",
 							borderRadius: "8px",
-							backgroundColor: "rgba(5, 5, 10, 0.4)",
+							backgroundColor: "var(--bg-secondary)",
 							border: "1px solid var(--border-subtle)",
 							color: "var(--text-primary)",
 							fontSize: "0.875rem",
@@ -600,14 +602,14 @@ export default function DocsLayout({
 						.markdown-body code {
 							font-family: var(--font-mono);
 							font-size: 0.9em;
-							background-color: rgba(255, 255, 255, 0.05);
+							background-color: var(--border-subtle);
 							padding: 0.2rem 0.4rem;
 							border-radius: 4px;
 							color: var(--brand-secondary);
 						}
 						.markdown-body pre {
-							background-color: rgba(18, 18, 22, 0.6);
-							border: 1px solid var(--border-subtle);
+							background-color: var(--bg-secondary);
+							border: 1px solid var(--border-strong);
 							border-radius: 8px;
 							padding: 1.25rem;
 							overflow-x: auto;
@@ -660,7 +662,7 @@ export default function DocsLayout({
 					</div>
 					<div>
 						<Link
-							href="/install"
+							href="/download"
 							style={{
 								display: "inline-flex",
 								alignItems: "center",

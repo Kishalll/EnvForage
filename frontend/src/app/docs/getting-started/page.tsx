@@ -270,9 +270,9 @@ Successfully installed envforage-2.0.0 psutil-5.9.8`,
 								<span style={{ color: "#3b82f6" }}>{terminalOutputs[activeStep].cmd}</span>
 							</div>
 							{/* Console Output */}
-							<pre style={{ margin: 0, whiteSpace: "pre-wrap", color: "var(--text-secondary)", lineHeight: 1.6 }}>
+							<div style={{ margin: 0, whiteSpace: "pre-wrap", color: "#e4e4e7", lineHeight: 1.6, fontFamily: "var(--font-mono)", fontSize: "0.9rem" }}>
 								{terminalOutputs[activeStep].output}
-							</pre>
+							</div>
 
 							{/* Terminal Actions */}
 							<button
@@ -286,7 +286,7 @@ Successfully installed envforage-2.0.0 psutil-5.9.8`,
 									borderRadius: "6px",
 									padding: "0.5rem",
 									cursor: "pointer",
-									color: copiedId === "terminal" ? "var(--brand-primary)" : "var(--text-secondary)",
+									color: copiedId === "terminal" ? "var(--brand-primary)" : "#a1a1aa",
 									transition: "all var(--transition-fast)",
 									display: "flex",
 									alignItems: "center",

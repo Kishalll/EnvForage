@@ -291,7 +291,7 @@ export default function HomePage() {
 							<h2 style={{ fontSize: "3.5rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "1.5rem" }}>Download EnvForage</h2>
 							<p style={{ fontSize: "1.25rem", color: "var(--text-secondary)", marginBottom: "3rem" }}>Available for all major platforms. Start eliminating dependency hell today.</p>
 							<Link
-								href="/install"
+								href="/download"
 								style={{
 									display: "inline-block",
 									padding: "1.25rem 3rem",
@@ -527,7 +527,7 @@ export default function HomePage() {
 						<h2 style={{ fontSize: "3.5rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "1.5rem" }}>Download EnvForage</h2>
 						<p style={{ fontSize: "1.25rem", color: "var(--text-secondary)", marginBottom: "3rem" }}>Available for all major platforms. Start eliminating dependency hell today.</p>
 						<Link
-							href="/install"
+							href="/download"
 							style={{
 								display: "inline-block",
 								padding: "1.25rem 3rem",

@@ -72,7 +72,7 @@ async def test_windows_format_blocked():
 
 async def test_sql_drop_blocked():
     with pytest.raises(SafetyViolationError):
-        await validate_rendered_output("DROP DATABASE envforge", "test.sh.j2")
+        await validate_rendered_output("DROP DATABASE envforage", "test.sh.j2")
 
 
 async def test_wget_pipe_shell_blocked():

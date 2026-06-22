@@ -42,11 +42,11 @@ FORBIDDEN_PATTERNS: list[tuple[str, str]] = [
         "Wget-pipe-to-shell (untrusted exec)",
     ),
     (
-        r"wget\s+[^;\|&]+?(-O\s+\S+).*(?:&&|;|\||\|\||\n)\s*(?:ba)?sh\s+\1",
+        r"wget\s+.*?(-O\s+(\S+))[\s\S]*?(?:&&|;|\||\|\||\n)\s*(?:ba)?sh\s+\2",
         "Wget download-and-execute pattern (sequential/chained)",
     ),
     (
-        r"wget\s+[^;\|&]+?(-O\s+(\S+)).*(?:&&|;|\||\|\||\n)\s*(?:ba)?sh\s+\2",
+       r"wget\s+.*?(-O\s+(\S+))[\s\S]*?(?:&&|;|\||\|\||\n)\s*(?:ba)?sh\s+\2",
         "Wget download-and-execute pattern (explicit target)",
     ),
     (

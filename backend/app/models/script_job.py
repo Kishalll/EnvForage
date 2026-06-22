@@ -12,6 +12,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 
+
 class CompressedText(sa.TypeDecorator):
     """
     Automatically compress text before storing in DB
@@ -32,7 +33,7 @@ class CompressedText(sa.TypeDecorator):
             return None
 
         return zlib.decompress(value).decode("utf-8")
-    
+
 class ScriptGenerationJob(Base):
     __tablename__ = "script_generation_jobs"
 

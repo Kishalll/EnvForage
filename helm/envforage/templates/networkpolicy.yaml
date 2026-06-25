@@ -14,6 +14,17 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
+  name: {{ include "envforage.fullname" . }}-default-deny-egress
+  labels:
+    app: {{ include "envforage.fullname" . }}
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
   name: {{ include "envforage.fullname" . }}-frontend
   labels:
     app: {{ include "envforage.fullname" . }}-frontend
@@ -36,7 +47,11 @@ spec:
       ports:
         - port: 8000
           protocol: TCP
-    - ports:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.networkPolicy.dnsNamespace }}
+      ports:
         - port: 53
           protocol: UDP
         - port: 53
@@ -85,7 +100,11 @@ spec:
       ports:
         - port: 11434
           protocol: TCP
-    - ports:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.networkPolicy.dnsNamespace }}
+      ports:
         - port: 53
           protocol: UDP
         - port: 53
@@ -113,7 +132,11 @@ spec:
         - port: 5432
           protocol: TCP
   egress:
-    - ports:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.networkPolicy.dnsNamespace }}
+      ports:
         - port: 53
           protocol: UDP
         - port: 53
@@ -141,7 +164,11 @@ spec:
         - port: 6379
           protocol: TCP
   egress:
-    - ports:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.networkPolicy.dnsNamespace }}
+      ports:
         - port: 53
           protocol: UDP
         - port: 53
@@ -169,7 +196,11 @@ spec:
         - port: 11434
           protocol: TCP
   egress:
-    - ports:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.networkPolicy.dnsNamespace }}
+      ports:
         - port: 53
           protocol: UDP
         - port: 53

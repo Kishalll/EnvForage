@@ -136,7 +136,10 @@ def run_upgrade(interactive: bool = True) -> None:
 
                 with client.stream("GET", installer_url) as r:
                     r.raise_for_status()
-                    total = int(r.headers.get("content-length", 0))
+                    try:
+                        total = int(r.headers.get("content-length", "0"))
+                    except (TypeError, ValueError):
+                        total = 0
                     downloaded = 0
                     with open(temp_path, "wb") as f:
                         for chunk in r.iter_bytes(chunk_size=8192):

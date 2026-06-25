@@ -236,7 +236,7 @@ async def _diagnose(
             )
         )
 
-    if quiet:
+    if quiet or output_format in ("json", "minimal"):
         report = ReportBuilder(timeout=timeout).build()
     else:
         with Progress(
@@ -1344,8 +1344,8 @@ async def _troubleshoot(api_url: str, quiet: bool) -> None:
         )
 
     # Build diagnostic report
-    if quiet:
-        report = ReportBuilder().build()
+    if quiet or output_format in ("json", "minimal"):
+        report = ReportBuilder(timeout=timeout).build()
     else:
         with Progress(
             SpinnerColumn(),

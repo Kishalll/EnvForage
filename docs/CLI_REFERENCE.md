@@ -15,7 +15,7 @@ pip install envforage
 
 Long-running CLI commands display a real-time spinner with per-step status and elapsed time:
 
-```
+```text
 Detecting GPUs 0:00:03
 ```
 

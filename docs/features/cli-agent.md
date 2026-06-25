@@ -210,7 +210,7 @@ The CLI displays real-time progress feedback during long-running operations usin
 
 `ReportBuilder.build()` accepts an optional `progress_callback` parameter. Before each detector runs, the callback is invoked with a status message (e.g., "Detecting GPUs"). The CLI commands (`diagnose`, `verify`, `troubleshoot`) pass a callback that updates a `rich.progress.Progress` spinner.
 
-```
+```text
 ┌─────────────────────────────────────────┐
 │  ReportBuilder.build()                  │
 │  ┌──────────┐  ┌──────────┐  ┌───────┐ │
